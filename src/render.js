@@ -1,42 +1,23 @@
 import { xorshift } from "./utils"
-import { animations } from "./animation"
+import { getAnimation } from "./animation"
 
 export const drawWalker = (walker) => {
     ctx.save()
     ctx.translate(walker.x, walker.y)
-    if (walker.facing_ < 1)
-        ctx.scale(-walker.scale_, walker.scale_)
+    ctx.scale(walker.facing_ < 1 ? -walker.scale_ : walker.scale_, walker.scale_)
     ctx.strokeStyle = "#333"
     ctx.lineWidth = "2"
     ctx.fillStyle = "#888"
+    const animation = getAnimation(walker.animation_, walker.time_)
     drawRoughCircle(0, -100, 40, walker.id_)
-    drawAnimation(walker.animation_, walker.time_)
-    ctx.restore()
-}
-
-
-export const drawAnimation = (animationIdx, time) => {
-    const animation = animations[animationIdx]
-    time = time % animation[0].t
-    let p = 0, q = 0, interp = 0
-    while (p < animation.length-1 && animation[p+1].t < time) p++
-    if (p < animation.length-1) q = p + 1
-    // Determine the interpolation factor between frames. This is complicated
-    // by looping at the last frame.
-    if (p == 0)
-        interp = time / animation[q].t
-    else if (p == animation.length-1)
-        interp = (time - animation[p].t) / (animation[q].t - animation[p].t)
-    const e1 = animation[p].e;
-    const e2 = animation[q].e;
-    for (let i = 0; i < e1.length; i++) {
-        const points = []
-        for (let j = 0; j < e1[i].length; j += 2) {
-            points.push(e1[i][j]*(1-interp) + e2[i][j]*interp)
-            points.push(e1[i][j+1]*(1-interp) + e2[i][j+1]*interp)
-        }
-        drawCurve(points)
+    drawCurve(animation.slice(0, 6))
+    ctx.fillStyle = "#f00"
+    if (IS_DEVELOPMENT_BUILD ) {
+        ctx.beginPath()
+        ctx.arc(0, 0, 5, 0, 2*Math.PI)
+        ctx.fill()
     }
+    ctx.restore()
 }
 
 

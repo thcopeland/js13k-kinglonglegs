@@ -11,7 +11,7 @@ document.body.style.margin = "0"
 ctx = canvas.getContext("2d")
 
 
-x = new Walker(100, 200, 4)
+x = new Walker(500, 500, 4)
 
 let lastTime
 const loop = (time) => {
