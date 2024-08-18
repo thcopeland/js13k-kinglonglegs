@@ -1,0 +1,16 @@
+{
+  "name": "leggyboi",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "npx rollup -c",
+    "serve": "ruby -run -ehttpd -- --port 3000 dist",
+    "dev": "npx rollup -cw"
+  },
+  "author": "Tom Copeland",
+  "license": "MIT",
+  "dependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.1",
+    "@rollup/plugin-terser": "^0.4.3",
+    "rollup": "^3.28.1" 
+  }
+}
