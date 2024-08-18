@@ -9,8 +9,7 @@
   "author": "Tom Copeland",
   "license": "MIT",
   "dependencies": {
-    "@rollup/plugin-node-resolve": "^15.2.1",
-    "@rollup/plugin-terser": "^0.4.3",
-    "rollup": "^3.28.1" 
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.20.0"
   }
 }

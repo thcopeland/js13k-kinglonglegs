@@ -1,7 +1,6 @@
 import copy from './rollup-plugin-copy.mjs'
 import gsub from './rollup-plugin-gsub.mjs'
 import html from './rollup-plugin-html.mjs'
-import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import zip from './rollup-plugin-zip.mjs'
 
