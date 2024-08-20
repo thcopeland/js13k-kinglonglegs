@@ -19,7 +19,6 @@ export default [
             gsub({
                 IS_DEVELOPMENT_BUILD: !release // terser will remove dead code like `if (!1)`
             }),
-            resolve(),
             release && terser({
                 mangle: {
                     properties: {
