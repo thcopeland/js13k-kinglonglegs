@@ -3,7 +3,7 @@ import { getAnimation } from "./animation"
 
 export const drawWalker = (walker) => {
     ctx.save()
-    ctx.translate(walker.x - viewport.x, walker.y - viewport.y)
+    ctx.translate(walker.x - GAME.viewport_x, walker.y - GAME.viewport_y)
     ctx.scale(walker.facing_*walker.scale_, walker.scale_)
     ctx.strokeStyle = "#333"
     ctx.lineWidth = "2"
