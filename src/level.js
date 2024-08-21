@@ -1,5 +1,3 @@
-import { xorshift } from "./utils"
-
 export const loadLevel = (num) => {
     const level = LEVELS[num]
     GAME.level = level
@@ -8,75 +6,112 @@ export const loadLevel = (num) => {
     GAME.objects = level.objects
 }
 
-export const drawBackdrop = () => {
-    ctx.save()
-    ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
-    ctx.fillStyle = "#888"
-    ctx.fillRect(0, 0, GAME.level.level_w, GAME.level.level_h)
-    ctx.restore()
-}
 
-export const drawLevel = () => {
-    let rng = xorshift(GAME.level_num | 1234)
-    ctx.save()
-    ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
-    GAME.level.map.forEach(block => {
-        ctx.lineCap = "round"
-        ctx.strokeStyle = "#000"
-        ctx.fillStyle = "#aaa"
-        ctx.lineWidth = "1"
-        const type = block[0] // TODO: normal, spikes
-        const roughness = block[2]
-        const points = block.slice(3)
-        ctx.beginPath()
-        ctx.moveTo(points[0], points[1])
-        for (let i = 0; i < points.length-2; i += 2) {
-            // Don't draw unnecessary lines.
-            if (points[i] < GAME.viewport_x && points[i+2] < GAME.viewport_x ||
-                points[i] > GAME.viewport_x + GAME.viewport_w && points[i+2] > GAME.viewport_x + GAME.viewport_w ||
-                points[i+1] < GAME.viewport_y && points[i+3] < GAME.viewport_y ||
-                points[i+1] > GAME.viewport_y + GAME.viewport_h && points[i+3] > GAME.viewport_y + GAME.viewport_h) {
-                ctx.moveTo(points[i+2], points[i+3])
-            } else {
-                const x = points[i]
-                const y = points[i+1]
-                const dx = points[i+2] - x
-                const dy = points[i+3] - y
-                const dist = Math.hypot(dx, dy)
-                const nx = dy / dist
-                const ny = -dx / dist
-                for (let f = 0; f < dist; f += (rng % 16) + 16)
+// Perform a swept sphere vs line segment collision.
+export const getNextCollision = (x, y, vx, vy, radius) => {
+    // ctx.save()
+    // ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    const result = { t: 1e10 }
+    for (let i = 0; i < GAME.level.colliders.length; i++) {
+        const collider = GAME.level.colliders[i]
+
+        // Perform swept sphere vs vertex checks.
+        for (let j = 1; j < collider.length; j += 2)
+        {
+            const qx = x - collider[j]
+            const qy = y - collider[j+1]
+            const qDotV = qx*vx + qy*vy
+            const t = qroot(vx*vx + vy*vy, 2*qDotV, qx*qx + qy*qy - radius*radius)
+            if (t >= 0 && t <= 1e3 && t < result.t)
+            {
+                // ctx.strokeStyle = "purple"
+                // ctx.beginPath()
+                // ctx.moveTo(x + vx*t, y+vy*t)
+                // ctx.lineTo(x + vx*t + qx, y+vy*t + qy)
+                // ctx.stroke()
+                result.t = t    // normalized time
+                result.s = 0    // normalized distance along segment
+                result.i = i    // collider index
+                result.j = j    // segment index
+                result.contact_x = collider[j]
+                result.contact_y = collider[j+1]
+                result.impulse = -qDotV / radius
+            }
+        }
+
+        // Perform swept sphere vs line segment checks.
+        for (let j = 1; j < collider.length-2; j += 2)
+        {
+            let nx = collider[j+3] - collider[j+1]
+            let ny = collider[j] - collider[j+2]
+            const l = Math.hypot(nx, ny)
+            nx /= l
+            ny /= l
+            const nDotV = vx * nx + vy * ny
+            if (nDotV > 0)
+                continue;
+            const nDotP = (x - collider[j]) * nx + (y - collider[j+1]) * ny
+            const t = (radius - nDotP) / nDotV
+            // Check that the collision happens in the future.
+            if (t >= 0 && t <= 1e3 && t < result.t)
+            {
+                // const ax = (collider[j] + collider[j+2])/2
+                // const ay = (collider[j+1] + collider[j+3])/2
+                // ctx.beginPath()
+                // ctx.strokeStyle = "violet"
+                // ctx.moveTo(ax, ay)
+                // ctx.lineTo(ax + nx * 30, ay + ny * 30)
+                // ctx.stroke()
+                // ctx.strokeStyle = "black"
+                // ctx.strokeText("t = " + Math.round(100*t)/100 + (t > 0 && t < 16 ? " COLLISION" : ""), ax, ay-35)
+                const s = (-ny * (x + vx * t - collider[j]) + nx * (y + vy * t - collider[j+1])) / l
+                // ctx.strokeText("s = " + Math.round(100*s)/100 + (s > 0 && s < 1 ? " COLLISION" : ""), ax, ay-20)
+                // Check that the sphere intersects the line segment.
+                if (s >= 0 && s <= 1)
                 {
-                    ctx.lineTo(
-                        x + dx / dist * f + nx * (Math.abs(rng=xorshift(rng))%roughness), 
-                        y + dy * f / dist + ny * (Math.abs(rng=xorshift(rng))%roughness))
+                    // ctx.strokeStyle = "purple"
+                    // ctx.beginPath()
+                    // ctx.moveTo(x + vx*t, y+vy*t)
+                    // ctx.lineTo(x + vx*t + nx * 50, y+vy*t + ny * 50)
+                    // ctx.stroke()
+                    result.t = t    // normalized time
+                    result.s = s    // normalized distance along segment
+                    result.i = i    // collider index
+                    result.j = j    // segment index
+                    result.contact_x = collider[j] + (collider[j+2] - collider[j]) * s
+                    result.contact_y = collider[j+1] + (collider[j+3] - collider[j+1]) * s
+                    result.impulse = -nDotV
+                    // ctx.fillStyle = "blue"
+                    // ctx.beginPath()
+                    // ctx.arc(result.dest_x, result.dest_y, 10, 0, 6.28)
+                    // ctx.fill()
+                    // ctx.beginPath()
+                    // ctx.arc(result.dest_x + result.normal_x * 20, result.dest_y + result.normal_y * 20, 5, 0, 6.28)
+                    // ctx.fill()
                 }
             }
         }
-        ctx.closePath()
-        ctx.fill()
-        ctx.stroke()
-        if (IS_DEVELOPMENT_BUILD) {
-            ctx.beginPath()
-            ctx.strokeStyle = "#00f"
-            ctx.moveTo(points[0], points[1])
-            for (let i = 0; i < points.length; i += 2) {
-                const x = points[i]
-                const y = points[i+1]
-                ctx.lineTo(x, y)
-            }
-            ctx.closePath()
-            ctx.stroke()
-        }
-    })
-    ctx.restore()
+    }
+
+    result.dest_x = x + vx * result.t
+    result.dest_y = y + vy * result.t
+    result.normal_x = (result.dest_x - result.contact_x) / radius
+    result.normal_y = (result.dest_y - result.contact_y) / radius
+    // ctx.restore()
+    return result
 }
 
-// [isColliding, segment, signed distance]
-export const getNextCollision = (bbX, bbY, bbW, bbH) => {
-    const rad = Math.hypot(bbW, bbH) / 2
 
+const qroot = (a, b, c) => {
+    // Return the smaller positive real root of ax^2 + bx + c, or a negative number.
+    const det = b*b - 4 * a * c
+    if (det < 0)
+        return -1
+    const e = -b / (2 * a)
+    const f = Math.sqrt(det) / (2 * a)
+    return e-f >= 0 ? e-f : e+f
 }
+
 
 const LEVELS = [
     // Introduction
@@ -104,8 +139,11 @@ const LEVELS = [
         objects: [],
         npcs: [],
         map: [
-            [ 1, 0, 10,    0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
-            [ 1, 0, 0,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600]
+            [ 10,    0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
+            [ 0,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600]
+        ],
+        colliders: [
+            [ 0,    0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
         ]
     }
 ]
