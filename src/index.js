@@ -1,7 +1,10 @@
+"use strict"
+
 import { drawWalker, drawLevel, drawBackdrop } from "./render"
 import { newWalker } from "./walker"
 import { loadLevel, getNextCollision } from "./level"
 import { adjustViewport } from "./viewport"
+import { zzfx } from "./zzfx"
 
 const canvas = document.querySelector("canvas")
 canvas.width = Math.min(1600, innerWidth)
@@ -29,6 +32,7 @@ document.onkeydown = (evt) => GAME.keyboard[evt.key] = true
 
 loadLevel(0)
 
+
 let lastTime
 const loop = (time) => {
     if (time != undefined) {
@@ -36,8 +40,10 @@ const loop = (time) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height)
         drawBackdrop()
         drawWalker(GAME.player)
-        if (GAME.keyboard["z"])
+        if (GAME.keyboard["z"]) {
+            zzfx(...[,,173,.03,.06,.05,1,.6,,91,,,,,,,,.6,.05])
             GAME.player.vy = -2
+        }
         if (GAME.keyboard["ArrowUp"])
             GAME.player.vy -= 0.1
         if (GAME.keyboard["ArrowDown"])
