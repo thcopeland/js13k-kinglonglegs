@@ -31,11 +31,11 @@ export const drawWalker = (walker) => {
 
 
 export const drawBackdrop = () => {
-    ctx.save()
-    ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    // ctx.save()
+    // ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
     ctx.fillStyle = "#888"
-    ctx.fillRect(0, 0, GAME.level.level_w, GAME.level.level_h)
-    ctx.restore()
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    // ctx.restore()
 }
 
 export const drawLevel = () => {
@@ -53,10 +53,10 @@ export const drawLevel = () => {
         ctx.moveTo(points[0], points[1])
         for (let i = 0; i < points.length-2; i += 2) {
             // Don't draw unnecessary lines.
-            if (points[i] < GAME.viewport_x && points[i+2] < GAME.viewport_x ||
+            if (false && (points[i] < GAME.viewport_x && points[i+2] < GAME.viewport_x ||
                 points[i] > GAME.viewport_x + GAME.viewport_w && points[i+2] > GAME.viewport_x + GAME.viewport_w ||
                 points[i+1] < GAME.viewport_y && points[i+3] < GAME.viewport_y ||
-                points[i+1] > GAME.viewport_y + GAME.viewport_h && points[i+3] > GAME.viewport_y + GAME.viewport_h) {
+                points[i+1] > GAME.viewport_y + GAME.viewport_h && points[i+3] > GAME.viewport_y + GAME.viewport_h)) {
                 ctx.lineTo(points[i+2], points[i+3])
             } else {
                 const x = points[i]

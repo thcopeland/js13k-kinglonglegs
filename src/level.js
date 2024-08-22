@@ -116,34 +116,23 @@ const qroot = (a, b, c) => {
 const LEVELS = [
     // Introduction
     {
-        messages_: [
-            {
-                text_: "The First",
-                position_: {
-                    reference_: 1, // Absolute, Player, Viewport
-                    x: 10,
-                    y: 0
-                },
-                cost: 0,
-                trigger: () => true
-            }
-        ],
-        brightness: 1,
-        dust: 0,
         enter_hook: () => {},
         exit_hook: () => {},
         update_hook: () => {},
         draw_hook: () => {},
-        level_w: 1500,
-        level_h: 1000,
+        brightness: 1,
+        dust: 0,
+        level_w: 2000,
+        level_h: 2000,
         objects: [],
         npcs: [],
         map: [
             [ 10,    0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
-            [ 0,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600]
+            [ 1,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600 ]
         ],
         colliders: [
             [ 0,    0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
+            [ 0,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600 ]
         ]
     }
 ]

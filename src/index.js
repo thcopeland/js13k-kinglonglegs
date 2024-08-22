@@ -1,6 +1,7 @@
 import { drawWalker, drawLevel, drawBackdrop } from "./render"
 import { newWalker } from "./walker"
 import { loadLevel, getNextCollision } from "./level"
+import { adjustViewport } from "./viewport"
 
 const canvas = document.querySelector("canvas")
 canvas.width = Math.min(1600, innerWidth)
@@ -78,6 +79,7 @@ const loop = (time) => {
         GAME.player.vy += 0.02 * dt
 
         // GAME.player.vx = Math.min(Math.max())
+        adjustViewport(dt)
 
         lastTime = time
     }
