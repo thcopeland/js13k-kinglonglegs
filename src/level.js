@@ -8,7 +8,7 @@ export const loadLevel = (num) => {
 
 
 // Perform a swept sphere vs line segment collision.
-export const getNextCollision = (x, y, vx, vy, radius) => {
+export const raycastTerrain = (x, y, vx, vy, radius) => {
     // ctx.save()
     // ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
     const result = { t: 1e10 }
@@ -127,12 +127,14 @@ const LEVELS = [
         objects: [],
         npcs: [],
         map: [
-            [ 10,    0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
-            [ 1,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600 ]
+            [ 10,   0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
+            [ 1,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600 ],
+            [ 30,   300, 300, 700,200, 800,200, 700,300, 300,300 ]
         ],
         colliders: [
             [ 0,    0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
-            [ 0,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600 ]
+            [ 0,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600 ],
+            [ 0,    300, 300, 700,200, 800,200, 700,300, 300,300 ]
         ]
     }
 ]

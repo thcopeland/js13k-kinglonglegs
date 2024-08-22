@@ -1,0 +1,22 @@
+# TODO
+- build tools
+- collision detection
+- basic movement
+* portals between levels
+* courage meter
+* spikes
+* panic
+* level brightness
+* words of comfort
+* final boss
+* end screen
+* talkers
+* pursuing ghosts
+* diving ghosts
+
+# Optional
+* IK for walking, jumping
+* adventurers
+* dust
+* music
+* start screen

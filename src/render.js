@@ -9,7 +9,7 @@ export const drawWalker = (walker) => {
     ctx.lineWidth = "2"
     ctx.fillStyle = "#888"
     ctx.lineCap = "round"
-    const animation = getAnimation(walker.animation_, walker.time_)
+    const animation = getAnimation(walker.anim, walker.anim_time)
     drawCurve(animation.slice(2, 8))
     drawCurve(animation.slice(8, 14))
     // drawCurve(animation.slice(6, 10))
@@ -26,6 +26,10 @@ export const drawWalker = (walker) => {
         ctx.lineWidth = "1"
         ctx.strokeRect(-32, -190, 64, 190)
     }
+    ctx.fillStyle = "#000"
+    ctx.beginPath()
+    ctx.arc(animation[0] + 20, animation[1], 3, 0, 2*Math.PI)
+    ctx.fill()
     ctx.restore()
 }
 
@@ -39,24 +43,24 @@ export const drawBackdrop = () => {
 }
 
 export const drawLevel = () => {
-    let rng = xorshift(GAME.level_num | 1234)
     ctx.save()
     ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
-    GAME.level.map.forEach(block => {
+    GAME.level.map.forEach((block, seed) => {
         ctx.lineCap = "round"
         ctx.strokeStyle = "#000"
         ctx.fillStyle = "#aaa"
         ctx.lineWidth = "1"
         const roughness = block[0]
         const points = block.slice(1)
+        let rng = xorshift((GAME.level_num ^ seed ^ roughness) | 1)
         ctx.beginPath()
         ctx.moveTo(points[0], points[1])
         for (let i = 0; i < points.length-2; i += 2) {
             // Don't draw unnecessary lines.
-            if (false && (points[i] < GAME.viewport_x && points[i+2] < GAME.viewport_x ||
+            if (points[i] < GAME.viewport_x && points[i+2] < GAME.viewport_x ||
                 points[i] > GAME.viewport_x + GAME.viewport_w && points[i+2] > GAME.viewport_x + GAME.viewport_w ||
                 points[i+1] < GAME.viewport_y && points[i+3] < GAME.viewport_y ||
-                points[i+1] > GAME.viewport_y + GAME.viewport_h && points[i+3] > GAME.viewport_y + GAME.viewport_h)) {
+                points[i+1] > GAME.viewport_y + GAME.viewport_h && points[i+3] > GAME.viewport_y + GAME.viewport_h) {
                 ctx.lineTo(points[i+2], points[i+3])
             } else {
                 const x = points[i]
@@ -101,7 +105,7 @@ export const drawRoughCircle = (x, y, radius, rng) => {
     ctx.fill()
     while (angle < 4*Math.PI) {
         rng = xorshift(rng)
-        angle += (rng & 255) / 512 + 0.05
+        angle += (rng & 255) / 512 + 0.1
         const s = 1 + ((rng & 255) - 128) / 6000
         points.push(Math.cos(angle) * radius*s + x)
         points.push(Math.sin(angle) * radius*s + y)

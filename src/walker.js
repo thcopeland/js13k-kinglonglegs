@@ -8,8 +8,8 @@ export const newWalker = (x, y, id_) => ({
     facing_: 1,
     scale_: 1,
     // Animation
-    animation_: 0, // Idle, Walking, Running, Jumping
-    time_: 0,
+    anim: 0, // Idle, Walking, Running, Jumping
+    anim_time: 0,
     // Logic
     state_: 0, // Normal, Panicking, Midair, Hiding, Resting
     type_: 0, // Normal, Hidden, Ghost, Crouching
