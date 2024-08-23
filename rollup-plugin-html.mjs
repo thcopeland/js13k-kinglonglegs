@@ -14,8 +14,7 @@ export default function ({ template }) {
                 if (data.type == 'chunk') {
                     const bundled = fs.readFileSync(template)
                         .toString()
-                        .replace('\n', '')
-                        .replace('{{{ }}}', data.code.trim())
+                        .replace('{{{ }}}', () => data.code.trim())
 
                     this.emitFile({
                         type: 'asset',

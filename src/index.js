@@ -29,6 +29,10 @@ GAME = {
 
 document.onkeyup = (evt) => GAME.keyboard[evt.key] = false
 document.onkeydown = (evt) => GAME.keyboard[evt.key] = true
+window.onblur = () => {
+    Object.keys(GAME.keyboard).forEach(key => GAME.keyboard[key] = false)
+    lastTime = undefined
+}
 
 loadLevel(0)
 
@@ -36,9 +40,10 @@ loadLevel(0)
 let lastDash = 0
 let lastTime
 const loop = (time) => {
-    if (time != undefined) {
+    if (time != undefined && document.visibilityState == "visible") {
         const dt = lastTime == undefined ? 0 : (time - lastTime) / 1
         ctx.clearRect(0, 0, canvas.width, canvas.height)
+        adjustViewport(dt)
         drawBackdrop()
         drawWalker(GAME.player)
         drawLevel()
@@ -79,16 +84,10 @@ const loop = (time) => {
         let movementTime = dt
         for (let i = 0; i < 3; i++) {
             const collision = raycastTerrain(GAME.player.x, GAME.player.y-40, GAME.player.vx, GAME.player.vy, 30)
-            // console.log(collision.t)
-            // if (collision.t < 1e-10) {
-            //     GAME.player.x += collision.normal_x
-            //     GAME.player.y += collision.normal_y
             if (collision.t <= movementTime) {
                 const effective_t = Math.max(0, collision.t - 0.001)
                 GAME.player.x += GAME.player.vx * effective_t
                 GAME.player.y += GAME.player.vy * effective_t
-                // console.log(collision.t, collision.impulse)
-                // console.log(Math.hypot(GAME.player.x - collision.contact_x, GAME.player.y - collision.contact_y))
                 GAME.player.vx += collision.normal_x * (collision.impulse + 0.001)
                 GAME.player.vy += collision.normal_y * (collision.impulse + 0.001)
                 movementTime -= collision.t
@@ -102,15 +101,10 @@ const loop = (time) => {
         if (isGrounded)
             GAME.player.anim_time += 2 * dt
 
-        // console.log(GAME.player.x, GAME.player.y)
-
         GAME.player.vx *= Math.pow(0.99, dt)
         GAME.player.vy *= Math.pow(0.99, dt)
         if (!isGrounded)
             GAME.player.vy += 0.01 * dt
-
-        // GAME.player.vx = Math.min(Math.max())
-        adjustViewport(dt)
 
         lastTime = time
     }
