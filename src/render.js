@@ -52,10 +52,10 @@ export const drawLevel = () => {
         ctx.lineWidth = "1"
         const roughness = block[0]
         const points = block.slice(1)
-        let rng = xorshift((GAME.level_num ^ seed ^ roughness) | 1)
         ctx.beginPath()
         ctx.moveTo(points[0], points[1])
         for (let i = 0; i < points.length-2; i += 2) {
+            let rng = xorshift((GAME.level_num ^ seed ^ roughness ^ i) | 1)
             // Don't draw unnecessary lines.
             if (points[i] < GAME.viewport_x && points[i+2] < GAME.viewport_x ||
                 points[i] > GAME.viewport_x + GAME.viewport_w && points[i+2] > GAME.viewport_x + GAME.viewport_w ||

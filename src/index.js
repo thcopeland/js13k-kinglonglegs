@@ -44,10 +44,10 @@ const loop = (time) => {
         drawLevel()
 
         const ground = raycastTerrain(GAME.player.x, GAME.player.y-40, 0, 1, 30)
-        const isGrounded = ground.t < 32
+        const isGrounded = ground.t < 2*dt + 2
         if (isGrounded)
         {
-            GAME.player.y = ground.contact_y + 0.1 * ground.normal_y
+            GAME.player.y = ground.contact_y + 0.01 * ground.normal_y * dt
             GAME.player.vy = 0
         }
 
@@ -104,8 +104,8 @@ const loop = (time) => {
 
         // console.log(GAME.player.x, GAME.player.y)
 
-        GAME.player.vx *= 0.9
-        GAME.player.vy *= 0.9
+        GAME.player.vx *= Math.pow(0.99, dt)
+        GAME.player.vy *= Math.pow(0.99, dt)
         if (!isGrounded)
             GAME.player.vy += 0.01 * dt
 
