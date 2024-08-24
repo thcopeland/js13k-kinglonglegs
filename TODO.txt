@@ -3,7 +3,7 @@
 - collision detection
 - basic movement
 * portals between levels
-* courage meter
+- courage meter
 * spikes
 * panic
 * level brightness

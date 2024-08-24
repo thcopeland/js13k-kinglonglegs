@@ -1,8 +1,10 @@
 "use strict"
 
-import { drawWalker, drawLevel, drawBackdrop } from "./render"
+import { drawWalker, drawLevel, drawBackdrop, drawParticles } from "./render"
 import { newWalker } from "./walker"
+import { newParticle, addParticle, updateParticles } from "./particles"
 import { loadLevel, raycastTerrain } from "./level"
+import { updateStats, incrementCourage, decrementCourage, drawStats } from "./stats"
 import { adjustViewport } from "./viewport"
 import { zzfx } from "./zzfx"
 
@@ -10,6 +12,7 @@ const canvas = document.querySelector("canvas")
 canvas.width = Math.min(1600, innerWidth)
 canvas.height = Math.min(900, innerHeight)
 ctx = canvas.getContext("2d")
+ctx.lineCap = "round"
 
 GAME = {
     mode: 1, // Start, Game, Game Over
@@ -17,9 +20,11 @@ GAME = {
     level_num: 0,
     player: newWalker(0, 400, 42),
     player_abilities: 0,
+    player_courage: 5,
+    player_maxCourage: 5,
     npcs: [],
     objects: [],
-    effects: [],
+    particles: [],
     viewport_x: 0,
     viewport_y: 0,
     viewport_w: canvas.width,
@@ -36,7 +41,6 @@ window.onblur = () => {
 
 loadLevel(0)
 
-
 let lastDash = 0
 let lastTime
 const loop = (time) => {
@@ -47,6 +51,19 @@ const loop = (time) => {
         drawBackdrop()
         drawWalker(GAME.player)
         drawLevel()
+        updateStats(dt)
+        drawStats()
+        updateParticles(dt)
+        drawParticles()
+
+        if (Math.random() < 0.002) {
+            incrementCourage(false, GAME.player.x, GAME.player.y)
+        } else if (Math.random() < 0.002 && GAME.player_courage > 0) {
+            decrementCourage()
+        }
+
+        if (Math.random() < 0.05)
+            addParticle(newParticle(0, undefined, 3000*Math.random() - 1000, 0, 10000, 0.01 + 0.005*Math.random()))
 
         const ground = raycastTerrain(GAME.player.x, GAME.player.y-40, 0, 1, 30)
         const isGrounded = ground.t < 2*dt + 2

@@ -1,14 +1,13 @@
 import { xorshift } from "./utils"
 import { getAnimation } from "./animation"
+import { setStrokeAndFill } from "./utils"
+
 
 export const drawWalker = (walker) => {
     ctx.save()
     ctx.translate(walker.x - GAME.viewport_x, walker.y - GAME.viewport_y)
     ctx.scale(walker.facing_*walker.scale_, walker.scale_)
-    ctx.strokeStyle = "#333"
-    ctx.lineWidth = "2"
-    ctx.fillStyle = "#888"
-    ctx.lineCap = "round"
+    setStrokeAndFill("#333", "#888", "2")
     const animation = getAnimation(walker.anim, walker.anim_time)
     drawCurve(animation.slice(2, 8))
     drawCurve(animation.slice(8, 14))
@@ -19,14 +18,13 @@ export const drawWalker = (walker) => {
     // ctx.arc(animation[2], animation[3]+10, 4, 0, 2*Math.PI)
     // ctx.stroke()
     // ctx.fill()
-    ctx.lineWidth = "2"
-    drawRoughCircle(animation[0], animation[1], 40, walker.id_)
-    if (IS_DEVELOPMENT_BUILD ) {
-        ctx.strokeStyle = "#f00"
-        ctx.lineWidth = "1"
-        ctx.strokeRect(-32, -190, 64, 190)
-    }
-    ctx.fillStyle = "#000"
+    drawRoughCircle(animation[0], animation[1], 40, walker.id_, 1 + (10 - GAME.player_courage) / 2)
+    // if (IS_DEVELOPMENT_BUILD ) {
+    //     ctx.strokeStyle = "#f00"
+    //     ctx.lineWidth = "1"
+    //     ctx.strokeRect(-32, -190, 64, 190)
+    // }
+    setStrokeAndFill("#333", "#000", "2")
     ctx.beginPath()
     ctx.arc(animation[0] + 20, animation[1], 3, 0, 2*Math.PI)
     ctx.fill()
@@ -45,11 +43,8 @@ export const drawBackdrop = () => {
 export const drawLevel = () => {
     ctx.save()
     ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    setStrokeAndFill("#000", "#aaa", "1")
     GAME.level.map.forEach((block, seed) => {
-        ctx.lineCap = "round"
-        ctx.strokeStyle = "#000"
-        ctx.fillStyle = "#aaa"
-        ctx.lineWidth = "1"
         const roughness = block[0]
         const points = block.slice(1)
         ctx.beginPath()
@@ -83,9 +78,9 @@ export const drawLevel = () => {
         ctx.stroke()
     })
     if (IS_DEVELOPMENT_BUILD) {
+        setStrokeAndFill("#f00", "#000", "1")
         GAME.level.colliders.forEach(collider => {
             ctx.beginPath()
-            ctx.strokeStyle = "#f00"
             ctx.moveTo(collider[1], collider[2])
             for (let i = 3; i < collider.length; i += 2) {
                 ctx.lineTo(collider[i], collider[i+1])
@@ -97,7 +92,30 @@ export const drawLevel = () => {
 }
 
 
-export const drawRoughCircle = (x, y, radius, rng) => {
+export const drawParticles = () => {
+    ctx.save()
+    ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    setStrokeAndFill("#fff8", "#fff", "2")
+    for (let i = 0; i < GAME.particles.length; i++)
+    {
+        const particle = GAME.particles[i]
+        if (particle !== undefined)  {
+            const px = particle.screenspace ? particle.x + GAME.viewport_x : particle.x
+            const py = particle.screenspace ? particle.y + GAME.viewport_y : particle.y
+            if (px > GAME.viewport_x - 10 && px < GAME.viewport_x + GAME.viewport_w + 10 &&
+                py > GAME.viewport_y - 10 && py < GAME.viewport_y + GAME.viewport_h + 10) {
+                ctx.beginPath()
+                ctx.arc(px, py, 3, 0, 2 * Math.PI)
+                ctx.fill()
+                ctx.stroke()
+            }
+        }
+    }
+    ctx.restore()
+}
+
+
+export const drawRoughCircle = (x, y, radius, rng, noise) => {
     let angle = 0
     const points = []
     ctx.beginPath()
@@ -106,7 +124,7 @@ export const drawRoughCircle = (x, y, radius, rng) => {
     while (angle < 4*Math.PI) {
         rng = xorshift(rng)
         angle += (rng & 255) / 512 + 0.1
-        const s = 1 + ((rng & 255) - 128) / 6000
+        const s = 1 + ((rng & 255) - 128) / 6000 * noise
         points.push(Math.cos(angle) * radius*s + x)
         points.push(Math.sin(angle) * radius*s + y)
     }
