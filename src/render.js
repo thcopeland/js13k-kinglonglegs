@@ -1,6 +1,6 @@
 import { xorshift } from "./utils"
 import { getAnimation } from "./animation"
-import { setStrokeAndFill } from "./utils"
+import { setStrokeAndFill, hypot } from "./utils"
 
 
 export const drawWalker = (walker) => {
@@ -11,19 +11,7 @@ export const drawWalker = (walker) => {
     const animation = getAnimation(walker.anim, walker.anim_time)
     drawCurve(animation.slice(2, 8))
     drawCurve(animation.slice(8, 14))
-    // drawCurve(animation.slice(6, 10))
-    // drawCurve(animation.slice(10, 14))
-    // drawCurve(animation.slice(14, 18))
-    // ctx.beginPath()
-    // ctx.arc(animation[2], animation[3]+10, 4, 0, 2*Math.PI)
-    // ctx.stroke()
-    // ctx.fill()
-    drawRoughCircle(animation[0], animation[1], 40, walker.id_, 1 + (10 - GAME.player_courage) / 2)
-    // if (IS_DEVELOPMENT_BUILD ) {
-    //     ctx.strokeStyle = "#f00"
-    //     ctx.lineWidth = "1"
-    //     ctx.strokeRect(-32, -190, 64, 190)
-    // }
+    drawRoughCircle(animation[0], animation[1], 40, walker.id_, 1)
     setStrokeAndFill("#333", "#000", "2")
     ctx.beginPath()
     ctx.arc(animation[0] + 20, animation[1], 3, 0, 2*Math.PI)
@@ -62,7 +50,7 @@ export const drawLevel = () => {
                 const y = points[i+1]
                 const dx = points[i+2] - x
                 const dy = points[i+3] - y
-                const dist = Math.hypot(dx, dy)
+                const dist = hypot(dx, dy)
                 const nx = dy / dist
                 const ny = -dx / dist
                 for (let f = 0; f < dist; f += (rng % 16) + 16)
@@ -142,4 +130,45 @@ export const drawCurve = (points) => {
     }
     ctx.lineTo(points[points.length-2], points[points.length-1])
     ctx.stroke()
+}
+
+
+export const drawGameObjects = () => {
+    ctx.save()
+    ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    for (let i = 0; i < GAME.level.objects.length; i++) {
+        const object = GAME.level.objects[i];
+        if (object.type_ === "spikes") {
+            setStrokeAndFill("#000", "#aaa", "2")
+            let rng = xorshift(i | 11)
+            ctx.beginPath()
+            for (let j = 0; j < object.positions.length; j += 4) {
+                rng = xorshift(rng)
+                const span = 4
+                const extension = object.extensions[j/2]
+                object.extensions[j/2] += 0.005
+                if (object.extensions[j/2] > 1)
+                    object.extensions[j/2] = 0
+                const x = object.positions[j]
+                const y = object.positions[j+1]
+                if (x > GAME.viewport_x - 100 && x < GAME.viewport_x + GAME.viewport_w + 100 &&
+                    y > GAME.viewport_y - 100 && y < GAME.viewport_y + GAME.viewport_h + 100) {
+                    const nx = object.positions[j+2]
+                    const ny = object.positions[j+3]
+                    ctx.beginPath()
+                    ctx.moveTo(x + ny * span + nx * object.reach * (extension - 1), y - nx * span + ny * object.reach * (extension - 1))
+                    ctx.lineTo(x + nx * object.reach * (extension), y + ny * object.reach * (extension))
+                    ctx.lineTo(x - ny * span + nx * object.reach * (extension - 1), y + nx * span + ny * object.reach * (extension - 1))
+                    ctx.stroke()
+                    ctx.fill()
+                }
+            }
+        } else {
+            if (IS_DEVELOPMENT_BUILD) {
+                ctx.restore()
+                throw new Exception("Invalid game object " + object)
+            }
+        }
+    }
+    ctx.restore()
 }

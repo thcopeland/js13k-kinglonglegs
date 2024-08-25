@@ -1,3 +1,6 @@
+import { newSpikes } from "./spikes"
+import { hypot } from "./utils"
+
 export const loadLevel = (num) => {
     const level = LEVELS[num]
     GAME.level = level
@@ -44,7 +47,7 @@ export const raycastTerrain = (x, y, vx, vy, radius) => {
         {
             let nx = collider[j+3] - collider[j+1]
             let ny = collider[j] - collider[j+2]
-            const l = Math.hypot(nx, ny)
+            const l = hypot(nx, ny)
             nx /= l
             ny /= l
             const nDotV = vx * nx + vy * ny
@@ -124,7 +127,9 @@ const LEVELS = [
         dust: 0,
         level_w: 2000,
         level_h: 2000,
-        objects: [],
+        objects: [
+            newSpikes([0,500, 1000,500, 1200,600,   1200,700,   -10,700], 30)
+        ],
         npcs: [],
         map: [
             [ 10,   0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],

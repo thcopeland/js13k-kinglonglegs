@@ -1,3 +1,5 @@
+import { hypot } from "./utils"
+
 /*
  * variety  0 - basic, 1 - courage gained
  * life
@@ -48,6 +50,13 @@ export const updateParticles = (dt) => {
     {
         const particle = GAME.particles[i]
         if (particle !== undefined) {
+            if (IS_DEVELOPMENT_BUILD) {
+                if (particle.x == undefined || particle.y == undefined || particle.vx == undefined || particle.vy == undefined ||
+                    particle.ax == undefined || particle.ay == undefined || particle.g == undefined || particle.drag == undefined ||
+                    particle.jitter == undefined || particle.wind == undefined || particle.swoop == undefined || particle.screenspace == undefined)
+                    throw new Exception("Invalid particle " + particle)
+            }
+
             if ((particle.life += dt) > particle.lifetime) {
                 // Time to rest, little one.
                 GAME.particles[i] = undefined
@@ -73,7 +82,7 @@ export const updateParticles = (dt) => {
                 if (particle.variety === 1) {
                     let dx = particle.x - particle.varietyData[0]
                     let dy = particle.y - particle.varietyData[1]
-                    const len = Math.hypot(dx, dy)
+                    const len = hypot(dx, dy)
                     particle.vx -= dx / (len + 10) / 4
                     particle.vy -= dy / (len + 10) / 4
                 }

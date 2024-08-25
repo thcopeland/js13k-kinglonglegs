@@ -1,5 +1,5 @@
 import { newParticle, addParticle } from "./particles"
-import { setStrokeAndFill } from "./utils"
+import { setStrokeAndFill, hypot } from "./utils"
 
 const couragePending = []
 const courageParticles = []
@@ -51,7 +51,7 @@ export const updateStats = (dt) => {
                 addParticle(particle)
             }
         } else {
-            const finished = pending[0] < 0 || courageParticles.every(p => Math.hypot(p.x - p.varietyData[0], p.y - p.varietyData[1]) < 10 || p.life >= p.lifetime)
+            const finished = pending[0] < 0 || courageParticles.every(p => hypot(p.x - p.varietyData[0], p.y - p.varietyData[1]) < 10 || p.life >= p.lifetime)
             if (finished) {
                 courageDrawn += couragePending.shift()[0]
                 if (pending[0] > 0)

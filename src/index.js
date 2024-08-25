@@ -1,6 +1,6 @@
 "use strict"
 
-import { drawWalker, drawLevel, drawBackdrop, drawParticles } from "./render"
+import { drawWalker, drawLevel, drawBackdrop, drawParticles, drawGameObjects } from "./render"
 import { newWalker } from "./walker"
 import { newParticle, addParticle, updateParticles } from "./particles"
 import { loadLevel, raycastTerrain } from "./level"
@@ -50,6 +50,7 @@ const loop = (time) => {
         adjustViewport(dt)
         drawBackdrop()
         drawWalker(GAME.player)
+        drawGameObjects()
         drawLevel()
         updateStats(dt)
         drawStats()

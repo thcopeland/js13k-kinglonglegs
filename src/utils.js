@@ -11,3 +11,6 @@ export const setStrokeAndFill = (stroke, fill, width) => {
     ctx.fillStyle = fill
     ctx.lineWidth = width
 }
+
+
+export const hypot = (dx, dy) => Math.sqrt(dx*dx + dy*dy)
