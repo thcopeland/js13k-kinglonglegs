@@ -4,6 +4,7 @@ import { drawWalker, drawLevel, drawBackdrop, drawParticles, drawGameObjects } f
 import { newWalker } from "./walker"
 import { newParticle, addParticle, updateParticles } from "./particles"
 import { loadLevel, raycastTerrain } from "./level"
+import { updateSpikes } from "./spikes"
 import { updateStats, incrementCourage, decrementCourage, drawStats } from "./stats"
 import { adjustViewport } from "./viewport"
 import { zzfx } from "./zzfx"
@@ -18,10 +19,12 @@ GAME = {
     mode: 1, // Start, Game, Game Over
     level: undefined,
     level_num: 0,
-    player: newWalker(0, 400, 42),
+    player: newWalker(400, 200, 42),
     player_abilities: 0,
-    player_courage: 5,
-    player_maxCourage: 5,
+    player_courage: 10,
+    player_maxCourage: 10,
+    pendingDamage: [],
+    invincibility: 0,
     npcs: [],
     objects: [],
     particles: [],
@@ -41,6 +44,19 @@ window.onblur = () => {
 
 loadLevel(0)
 
+const updateGameObjects = (dt) => {
+    for (let i = 0; i < GAME.level.objects.length; i++) {
+        const obj = GAME.level.objects[i]
+        if (obj.type_ === "spikes")
+            updateSpikes(obj, dt)
+        else {
+            if (IS_DEVELOPMENT_BUILD) {
+                throw new Exception("Invalid game object " + obj)
+            }
+        }
+    }
+}
+
 let lastDash = 0
 let lastTime
 const loop = (time) => {
@@ -57,10 +73,22 @@ const loop = (time) => {
         updateParticles(dt)
         drawParticles()
 
-        if (Math.random() < 0.002) {
+        updateGameObjects(dt)
+
+        if (GAME.invincibility > 0)
+            GAME.invincibility -= dt
+        if (GAME.pendingDamage.length > 0) {
+            if (GAME.player_courage > 0 && GAME.invincibility <= 0) {
+                decrementCourage()
+                GAME.invincibility = 500
+                GAME.player.vx = 5*GAME.pendingDamage[0].push_x
+                GAME.player.vy = 5*GAME.pendingDamage[0].push_y
+            }
+            GAME.pendingDamage.length = 0
+        }
+
+        if (GAME.keyboard["q"] && GAME.player_courage < 10) {
             incrementCourage(false, GAME.player.x, GAME.player.y)
-        } else if (Math.random() < 0.002 && GAME.player_courage > 0) {
-            decrementCourage()
         }
 
         if (Math.random() < 0.05)

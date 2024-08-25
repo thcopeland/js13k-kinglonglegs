@@ -40,7 +40,7 @@ export const updateStats = (dt) => {
             for (let i = 0; i < 10; i++) {
                 let particle
                 if (pending[0] > 0) {
-                    particle = newParticle(1, [courageDrawn * 40 + 40, 40], pending[1] - GAME.viewport_x, pending[2] - GAME.viewport_y, 1500, 1e-10, 0.97, 1, 0.0001)
+                    particle = newParticle(1, [courageDrawn * 40 + 40, 40], pending[1] - GAME.viewport_x, pending[2] - GAME.viewport_y, 3000, 1e-10, 0.97, 1, 0.0001)
                     particle.screenspace = true
                 } else {
                     particle = newParticle(0, undefined, courageDrawn * 40 + GAME.viewport_x, 40 + GAME.viewport_y, 10000, 0.005, 0.99, 0.5, 0.005)

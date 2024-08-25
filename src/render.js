@@ -145,10 +145,7 @@ export const drawGameObjects = () => {
             for (let j = 0; j < object.positions.length; j += 4) {
                 rng = xorshift(rng)
                 const span = 4
-                const extension = object.extensions[j/2]
-                object.extensions[j/2] += 0.005
-                if (object.extensions[j/2] > 1)
-                    object.extensions[j/2] = 0
+                const extension = Math.pow(object.extensions[j/2], 4)
                 const x = object.positions[j]
                 const y = object.positions[j+1]
                 if (x > GAME.viewport_x - 100 && x < GAME.viewport_x + GAME.viewport_w + 100 &&
@@ -157,7 +154,7 @@ export const drawGameObjects = () => {
                     const ny = object.positions[j+3]
                     ctx.beginPath()
                     ctx.moveTo(x + ny * span + nx * object.reach * (extension - 1), y - nx * span + ny * object.reach * (extension - 1))
-                    ctx.lineTo(x + nx * object.reach * (extension), y + ny * object.reach * (extension))
+                    ctx.lineTo(x + nx * object.reach * extension, y + ny * object.reach * extension)
                     ctx.lineTo(x - ny * span + nx * object.reach * (extension - 1), y + nx * span + ny * object.reach * (extension - 1))
                     ctx.stroke()
                     ctx.fill()

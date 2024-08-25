@@ -4,7 +4,7 @@
 - basic movement
 * portals between levels
 - courage meter
-* spikes
+- spikes
 * panic
 * level brightness
 * words of comfort
