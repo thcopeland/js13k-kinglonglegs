@@ -35,20 +35,20 @@ export const newParticle = (variety, varietyData, x, y, lifetime, g, drag, jitte
 
 
 export const addParticle = (particle) => {
-    for (let i = 0; i < GAME.particles.length; i++) {
-        if (GAME.particles[i] === undefined) {
-            GAME.particles[i] = particle
+    for (let i = 0; i < G.particles.length; i++) {
+        if (G.particles[i] === undefined) {
+            G.particles[i] = particle
             return;
         }
     }
-    GAME.particles.push(particle)
+    G.particles.push(particle)
 }
 
 
 export const updateParticles = (dt) => {
-    for (let i = 0; i < GAME.particles.length; i++)
+    for (let i = 0; i < G.particles.length; i++)
     {
-        const particle = GAME.particles[i]
+        const particle = G.particles[i]
         if (particle !== undefined) {
             if (IS_DEVELOPMENT_BUILD) {
                 if (particle.x == undefined || particle.y == undefined || particle.vx == undefined || particle.vy == undefined ||
@@ -59,7 +59,7 @@ export const updateParticles = (dt) => {
 
             if ((particle.life += dt) > particle.lifetime) {
                 // Time to rest, little one.
-                GAME.particles[i] = undefined
+                G.particles[i] = undefined
             } else {
                 particle.x += particle.vx * dt
                 particle.y += particle.vy * dt

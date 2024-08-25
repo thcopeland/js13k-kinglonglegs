@@ -3,20 +3,20 @@ import { hypot } from "./utils"
 
 export const loadLevel = (num) => {
     const level = LEVELS[num]
-    GAME.level = level
-    GAME.level_num = num
-    GAME.npcs = level.npcs
-    GAME.objects = level.objects
+    G.level = level
+    G.level_num = num
+    G.npcs = level.npcs
+    G.objects = level.objects
 }
 
 
 // Perform a swept sphere vs line segment collision.
 export const raycastTerrain = (x, y, vx, vy, radius) => {
     // ctx.save()
-    // ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    // ctx.translate(-G.viewport_x, -G.viewport_y)
     const result = { t: 1e10 }
-    for (let i = 0; i < GAME.level.colliders.length; i++) {
-        const collider = GAME.level.colliders[i]
+    for (let i = 0; i < G.level.colliders.length; i++) {
+        const collider = G.level.colliders[i]
 
         // Perform swept sphere vs vertex checks.
         for (let j = 1; j < collider.length; j += 2)

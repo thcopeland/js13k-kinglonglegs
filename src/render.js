@@ -5,7 +5,7 @@ import { setStrokeAndFill, hypot } from "./utils"
 
 export const drawWalker = (walker) => {
     ctx.save()
-    ctx.translate(walker.x - GAME.viewport_x, walker.y - GAME.viewport_y)
+    ctx.translate(walker.x - G.viewport_x, walker.y - G.viewport_y)
     ctx.scale(walker.facing_*walker.scale_, walker.scale_)
     setStrokeAndFill("#333", "#888", "2")
     const animation = getAnimation(walker.anim, walker.anim_time)
@@ -22,7 +22,7 @@ export const drawWalker = (walker) => {
 
 export const drawBackdrop = () => {
     // ctx.save()
-    // ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    // ctx.translate(-G.viewport_x, -G.viewport_y)
     ctx.fillStyle = "#888"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     // ctx.restore()
@@ -30,20 +30,20 @@ export const drawBackdrop = () => {
 
 export const drawLevel = () => {
     ctx.save()
-    ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    ctx.translate(-G.viewport_x, -G.viewport_y)
     setStrokeAndFill("#000", "#aaa", "1")
-    GAME.level.map.forEach((block, seed) => {
+    G.level.map.forEach((block, seed) => {
         const roughness = block[0]
         const points = block.slice(1)
         ctx.beginPath()
         ctx.moveTo(points[0], points[1])
         for (let i = 0; i < points.length-2; i += 2) {
-            let rng = xorshift((GAME.level_num ^ seed ^ roughness ^ i) | 1)
+            let rng = xorshift((G.level_num ^ seed ^ roughness ^ i) | 1)
             // Don't draw unnecessary lines.
-            if (points[i] < GAME.viewport_x && points[i+2] < GAME.viewport_x ||
-                points[i] > GAME.viewport_x + GAME.viewport_w && points[i+2] > GAME.viewport_x + GAME.viewport_w ||
-                points[i+1] < GAME.viewport_y && points[i+3] < GAME.viewport_y ||
-                points[i+1] > GAME.viewport_y + GAME.viewport_h && points[i+3] > GAME.viewport_y + GAME.viewport_h) {
+            if (points[i] < G.viewport_x && points[i+2] < G.viewport_x ||
+                points[i] > G.viewport_x + G.viewport_w && points[i+2] > G.viewport_x + G.viewport_w ||
+                points[i+1] < G.viewport_y && points[i+3] < G.viewport_y ||
+                points[i+1] > G.viewport_y + G.viewport_h && points[i+3] > G.viewport_y + G.viewport_h) {
                 ctx.lineTo(points[i+2], points[i+3])
             } else {
                 const x = points[i]
@@ -67,7 +67,7 @@ export const drawLevel = () => {
     })
     if (IS_DEVELOPMENT_BUILD) {
         setStrokeAndFill("#f00", "#000", "1")
-        GAME.level.colliders.forEach(collider => {
+        G.level.colliders.forEach(collider => {
             ctx.beginPath()
             ctx.moveTo(collider[1], collider[2])
             for (let i = 3; i < collider.length; i += 2) {
@@ -82,16 +82,16 @@ export const drawLevel = () => {
 
 export const drawParticles = () => {
     ctx.save()
-    ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
+    ctx.translate(-G.viewport_x, -G.viewport_y)
     setStrokeAndFill("#fff8", "#fff", "2")
-    for (let i = 0; i < GAME.particles.length; i++)
+    for (let i = 0; i < G.particles.length; i++)
     {
-        const particle = GAME.particles[i]
+        const particle = G.particles[i]
         if (particle !== undefined)  {
-            const px = particle.screenspace ? particle.x + GAME.viewport_x : particle.x
-            const py = particle.screenspace ? particle.y + GAME.viewport_y : particle.y
-            if (px > GAME.viewport_x - 10 && px < GAME.viewport_x + GAME.viewport_w + 10 &&
-                py > GAME.viewport_y - 10 && py < GAME.viewport_y + GAME.viewport_h + 10) {
+            const px = particle.screenspace ? particle.x + G.viewport_x : particle.x
+            const py = particle.screenspace ? particle.y + G.viewport_y : particle.y
+            if (px > G.viewport_x - 10 && px < G.viewport_x + G.viewport_w + 10 &&
+                py > G.viewport_y - 10 && py < G.viewport_y + G.viewport_h + 10) {
                 ctx.beginPath()
                 ctx.arc(px, py, 3, 0, 2 * Math.PI)
                 ctx.fill()
@@ -135,9 +135,9 @@ export const drawCurve = (points) => {
 
 export const drawGameObjects = () => {
     ctx.save()
-    ctx.translate(-GAME.viewport_x, -GAME.viewport_y)
-    for (let i = 0; i < GAME.level.objects.length; i++) {
-        const object = GAME.level.objects[i];
+    ctx.translate(-G.viewport_x, -G.viewport_y)
+    for (let i = 0; i < G.level.objects.length; i++) {
+        const object = G.level.objects[i];
         if (object.type_ === "spikes") {
             setStrokeAndFill("#000", "#aaa", "2")
             let rng = xorshift(i | 11)
@@ -145,11 +145,11 @@ export const drawGameObjects = () => {
             for (let j = 0; j < object.positions.length; j += 4) {
                 rng = xorshift(rng)
                 const span = 4
-                const extension = Math.pow(object.extensions[j/2], 4)
+                const extension = Math.pow(object.extension[j/2], 4)
                 const x = object.positions[j]
                 const y = object.positions[j+1]
-                if (x > GAME.viewport_x - 100 && x < GAME.viewport_x + GAME.viewport_w + 100 &&
-                    y > GAME.viewport_y - 100 && y < GAME.viewport_y + GAME.viewport_h + 100) {
+                if (x > G.viewport_x - 100 && x < G.viewport_x + G.viewport_w + 100 &&
+                    y > G.viewport_y - 100 && y < G.viewport_y + G.viewport_h + 100) {
                     const nx = object.positions[j+2]
                     const ny = object.positions[j+3]
                     ctx.beginPath()
