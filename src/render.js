@@ -144,18 +144,19 @@ export const drawGameObjects = () => {
             ctx.beginPath()
             for (let j = 0; j < object.positions.length; j += 4) {
                 rng = xorshift(rng)
-                const span = 4
+                const reach = object.reach * (1 + (rng % 30) / 100)
+                const span = Math.log(reach) + 1
                 const extension = Math.pow(object.extension[j/2], 4)
                 const x = object.positions[j]
                 const y = object.positions[j+1]
-                if (x > G.viewport_x - 100 && x < G.viewport_x + G.viewport_w + 100 &&
-                    y > G.viewport_y - 100 && y < G.viewport_y + G.viewport_h + 100) {
+                if (x > G.viewport_x - reach && x < G.viewport_x + G.viewport_w + reach &&
+                    y > G.viewport_y - reach && y < G.viewport_y + G.viewport_h + reach) {
                     const nx = object.positions[j+2]
                     const ny = object.positions[j+3]
                     ctx.beginPath()
-                    ctx.moveTo(x + ny * span + nx * object.reach * (extension - 1), y - nx * span + ny * object.reach * (extension - 1))
-                    ctx.lineTo(x + nx * object.reach * extension, y + ny * object.reach * extension)
-                    ctx.lineTo(x - ny * span + nx * object.reach * (extension - 1), y + nx * span + ny * object.reach * (extension - 1))
+                    ctx.moveTo(x + ny * span + nx * reach * (extension - 1), y - nx * span + ny * reach * (extension - 1))
+                    ctx.lineTo(x + nx * reach * extension, y + ny * reach * extension)
+                    ctx.lineTo(x - ny * span + nx * reach * (extension - 1), y + nx * span + ny * reach * (extension - 1))
                     ctx.stroke()
                     ctx.fill()
                 }

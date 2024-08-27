@@ -51,10 +51,11 @@ export const updateSpikes = (obj, dt) => {
             throw new Exception("invalid game object passed to updateSpike " + obj)
     }
     for (let i = 0; i < obj.positions.length; i += 4) {
-        const dx = G.player.x - obj.positions[i]
-        const dy = G.player.y - obj.positions[i+1]
+        const dx = G.player.x - (obj.positions[i] + obj.reach * obj.extension[i/2] * obj.positions[i+2])
+        const dy = G.player.y - (obj.positions[i+1] + obj.reach * obj.extension[i/2] * obj.positions[i+3])
         const dist = hypot(dx, dy)
-        if (dist < obj.reach * 0.75 && obj.extension[i/2] > 0.75) {
+        const proj = (dx * obj.extension[i/2] + dy * obj.extension[i/2]) / dist
+        if (proj > 0.8 && dist < 50 && obj.extension[i/2] > 0.75) {
             G.pendingDamage.push({ cause: "spikes", push_x: obj.positions[i+2], push_y: obj.positions[i+3] })
         }
 
@@ -79,7 +80,7 @@ export const updateSpikes = (obj, dt) => {
                         obj.extension[i/2] = 1
                     }
                 }
-            } else if (dist < 50 ||
+            } else if (dist < 30 ||
                 (i < obj.positions.length - 4 && obj.extension[i/2 + 2] > 0.2 && obj.extension[i/2 + 3] > 0 && obj.extension[i/2 + 3] < 2000) ||
                 (i > 4 && obj.extension[i/2 - 2] > 0.2 && obj.extension[i/2 - 1] > 0 && obj.extension[i/2 - 1] < 2000)) { // retracted
                 // Extend if the player is nearby or a neighbor is extending.
