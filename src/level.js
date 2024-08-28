@@ -1,4 +1,5 @@
 import { newSpikes } from "./spikes"
+import { newWords } from "./comfort"
 import { hypot } from "./utils"
 
 export const loadLevel = (num) => {
@@ -129,7 +130,8 @@ const LEVELS = [
         level_h: 2000,
         objects: [
             newSpikes([0,500, 1000,500, 1200,600,   1200,700,   -10,700], 30),
-            newSpikes([1300,600, 1500,600, 1500,700, 1300,700, 1300,600], 30, 0.003, 100)
+            newSpikes([1300,600, 1500,600, 1500,700, 1300,700, 1300,600], 30, 0.003, 100),
+            newWords("Heyo", 1400, 400)
         ],
         npcs: [],
         map: [

@@ -137,10 +137,10 @@ export const drawGameObjects = () => {
     ctx.save()
     ctx.translate(-G.viewport_x, -G.viewport_y)
     for (let i = 0; i < G.level.objects.length; i++) {
-        const object = G.level.objects[i];
+        const object = G.level.objects[i]
+        let rng = xorshift(i | 11)
         if (object.type_ === "spikes") {
             setStrokeAndFill("#000", "#aaa", "2")
-            let rng = xorshift(i | 11)
             ctx.beginPath()
             for (let j = 0; j < object.positions.length; j += 4) {
                 rng = xorshift(rng)
@@ -161,10 +161,32 @@ export const drawGameObjects = () => {
                     ctx.fill()
                 }
             }
+        } else if (object.type_ === "words") {
+            // if (object.t < 1000) {
+            //     setStrokeAndFill("#fff8", "#fff", "2")
+            //     for (let j = 0; j < object.particles.length; j += 4) {
+            //         // ctx.beginPath()
+            //         // ctx.arc(object.particles[j], object.particles[j+1], 4, 0, 2*Math.PI)
+            //         // ctx.fill()
+            //         // ctx.stroke()
+            //         ctx.beginPath()
+            //         ctx.fillStyle = "#fff1"
+            //         ctx.arc(object.particles[j], object.particles[j+1], 16, 0, 2*Math.PI)
+            //         ctx.fill()
+            //         ctx.beginPath()
+            //         ctx.fillStyle = "#fff4"
+            //         ctx.arc(object.particles[j], object.particles[j+1], 8, 0, 2*Math.PI)
+            //         ctx.fill()
+            //         ctx.beginPath()
+            //         ctx.fillStyle = "#fff"
+            //         ctx.arc(object.particles[j], object.particles[j+1], 4, 0, 2*Math.PI)
+            //         ctx.fill()
+            //     }
+            // }
         } else {
             if (IS_DEVELOPMENT_BUILD) {
                 ctx.restore()
-                throw new Exception("Invalid game object " + object)
+                throw new Error("Invalid game object " + JSON.stringify(object))
             }
         }
     }

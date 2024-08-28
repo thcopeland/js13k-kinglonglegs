@@ -5,6 +5,7 @@ import { newWalker } from "./walker"
 import { newParticle, addParticle, updateParticles } from "./particles"
 import { loadLevel, raycastTerrain } from "./level"
 import { updateSpikes } from "./spikes"
+import { updateWords } from "./comfort"
 import { updateStats, incrementCourage, decrementCourage, drawStats } from "./stats"
 import { adjustViewport } from "./viewport"
 import { zzfx } from "./zzfx"
@@ -47,11 +48,14 @@ loadLevel(0)
 const updateGameObjects = (dt) => {
     for (let i = 0; i < G.level.objects.length; i++) {
         const obj = G.level.objects[i]
-        if (obj.type_ === "spikes")
+        // TODO: store draw/update in the objects
+        if (obj.type_ === "spikes") {
             updateSpikes(obj, dt)
-        else {
+        } else if (obj.type_ === "words") {
+            updateWords(obj, dt)
+        } else {
             if (IS_DEVELOPMENT_BUILD) {
-                throw new Exception("Invalid game object " + obj)
+                throw new Error("Invalid game object "  + JSON.stringify(obj))
             }
         }
     }
@@ -67,11 +71,12 @@ const loop = (time) => {
         drawBackdrop()
         drawWalker(G.player)
         drawGameObjects()
+        updateParticles(dt)
+        drawParticles()
         drawLevel()
         updateStats(dt)
         drawStats()
-        updateParticles(dt)
-        drawParticles()
+
 
         updateGameObjects(dt)
 

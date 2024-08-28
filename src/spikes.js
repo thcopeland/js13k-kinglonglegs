@@ -48,7 +48,7 @@ export const newSpikes = (vertices, reach, speed_, delay) => {
 export const updateSpikes = (obj, dt) => {
     if (IS_DEVELOPMENT_BUILD) {
         if (obj.type_ != "spikes" || obj.positions == undefined || obj.extension == undefined || ((obj.speed_ == undefined) ^ (obj.delay == undefined)))
-            throw new Exception("invalid game object passed to updateSpike " + obj)
+            throw new Error("invalid game object passed to updateSpike " + JSON.stringify(obj))
     }
     for (let i = 0; i < obj.positions.length; i += 4) {
         const dx = G.player.x - (obj.positions[i] + obj.reach * obj.extension[i/2] * obj.positions[i+2])

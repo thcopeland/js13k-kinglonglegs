@@ -54,7 +54,7 @@ export const updateParticles = (dt) => {
                 if (particle.x == undefined || particle.y == undefined || particle.vx == undefined || particle.vy == undefined ||
                     particle.ax == undefined || particle.ay == undefined || particle.g == undefined || particle.drag == undefined ||
                     particle.jitter == undefined || particle.wind == undefined || particle.swoop == undefined || particle.screenspace == undefined)
-                    throw new Exception("Invalid particle " + particle)
+                    throw new Error("Invalid particle " + JSON.stringify(obj))
             }
 
             if ((particle.life += dt) > particle.lifetime) {
@@ -75,7 +75,7 @@ export const updateParticles = (dt) => {
                 }
                 if (particle.swoop !== 0) {
                     const speed2 = particle.vx * particle.vx + particle.vy * particle.vy
-                    const swoop = particle.swoop * Math.sin((particle.life + particle.x + particle.y) / (1000 + ((i * 731) & 511))) / (4 + speed2)
+                    const swoop = particle.swoop * Math.sin((particle.life + (particle.x + particle.y) / 10 + 17*i) / (1000 + ((i * 731) & 511))) / (4 + speed2)
                     particle.ax -= particle.vy * swoop
                     particle.ay += particle.vx * swoop
                 }
