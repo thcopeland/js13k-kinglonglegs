@@ -92,7 +92,7 @@ const loop = (time) => {
             G.pendingDamage.length = 0
         }
 
-        if (G.keys["q"] && G.player_courage < 10) {
+        if (G.keys["q"] && G.player_courage < G.player_maxCourage) {
             incrementCourage(false, G.player.x, G.player.y)
         }
 

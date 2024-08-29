@@ -1,5 +1,6 @@
-import { xorshift } from "./utils"
+import { xorshift, grayscale } from "./utils"
 import { getAnimation } from "./animation"
+import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK } from "./shapes"
 import { setStrokeAndFill, hypot } from "./utils"
 
 
@@ -7,12 +8,12 @@ export const drawWalker = (walker) => {
     ctx.save()
     ctx.translate(walker.x - G.viewport_x, walker.y - G.viewport_y)
     ctx.scale(walker.facing_*walker.scale_, walker.scale_)
-    setStrokeAndFill("#333", "#888", "2")
+    setStrokeAndFill(3, 8, 2)
     const animation = getAnimation(walker.anim, walker.anim_time)
     drawCurve(animation.slice(2, 8))
     drawCurve(animation.slice(8, 14))
     drawRoughCircle(animation[0], animation[1], 40, walker.id_, 1)
-    setStrokeAndFill("#333", "#000", "2")
+    setStrokeAndFill(3, 0, 2)
     ctx.beginPath()
     ctx.arc(animation[0] + 20, animation[1], 3, 0, 2*Math.PI)
     ctx.fill()
@@ -31,7 +32,7 @@ export const drawBackdrop = () => {
 export const drawLevel = () => {
     ctx.save()
     ctx.translate(-G.viewport_x, -G.viewport_y)
-    setStrokeAndFill("#000", "#aaa", "1")
+    setStrokeAndFill(0, 10, 1)
     G.level.map.forEach((block, seed) => {
         const roughness = block[0]
         const points = block.slice(1)
@@ -66,7 +67,9 @@ export const drawLevel = () => {
         ctx.stroke()
     })
     if (IS_DEVELOPMENT_BUILD) {
-        setStrokeAndFill("#f00", "#000", "1")
+        ctx.strokeStyle = "#f00"
+        ctx.fillStyle = "#000"
+        ctx.lineWidth = 1
         G.level.colliders.forEach(collider => {
             ctx.beginPath()
             ctx.moveTo(collider[1], collider[2])
@@ -83,7 +86,7 @@ export const drawLevel = () => {
 export const drawParticles = () => {
     ctx.save()
     ctx.translate(-G.viewport_x, -G.viewport_y)
-    setStrokeAndFill("#fff8", "#fff", "2")
+    setStrokeAndFill(13, 15, 1)
     for (let i = 0; i < G.particles.length; i++)
     {
         const particle = G.particles[i]
@@ -140,7 +143,7 @@ export const drawGameObjects = () => {
         const object = G.level.objects[i]
         let rng = xorshift(i | 11)
         if (object.type_ === "spikes") {
-            setStrokeAndFill("#000", "#aaa", "2")
+            setStrokeAndFill(0, 10, 2)
             ctx.beginPath()
             for (let j = 0; j < object.positions.length; j += 4) {
                 rng = xorshift(rng)
@@ -162,27 +165,8 @@ export const drawGameObjects = () => {
                 }
             }
         } else if (object.type_ === "words") {
-            // if (object.t < 1000) {
-            //     setStrokeAndFill("#fff8", "#fff", "2")
-            //     for (let j = 0; j < object.particles.length; j += 4) {
-            //         // ctx.beginPath()
-            //         // ctx.arc(object.particles[j], object.particles[j+1], 4, 0, 2*Math.PI)
-            //         // ctx.fill()
-            //         // ctx.stroke()
-            //         ctx.beginPath()
-            //         ctx.fillStyle = "#fff1"
-            //         ctx.arc(object.particles[j], object.particles[j+1], 16, 0, 2*Math.PI)
-            //         ctx.fill()
-            //         ctx.beginPath()
-            //         ctx.fillStyle = "#fff4"
-            //         ctx.arc(object.particles[j], object.particles[j+1], 8, 0, 2*Math.PI)
-            //         ctx.fill()
-            //         ctx.beginPath()
-            //         ctx.fillStyle = "#fff"
-            //         ctx.arc(object.particles[j], object.particles[j+1], 4, 0, 2*Math.PI)
-            //         ctx.fill()
-            //     }
-            // }
+            drawShape(WORDS_OF_COMFORT_BOOK, object.x, object.y - 157 + 15 * Math.pow(object.t / 500, 3))
+            drawShape(WORDS_OF_COMFORT_PEDESTAL, object.x, object.y)
         } else {
             if (IS_DEVELOPMENT_BUILD) {
                 ctx.restore()
@@ -191,4 +175,36 @@ export const drawGameObjects = () => {
         }
     }
     ctx.restore()
+}
+
+
+export const drawShape = (shape, x, y) => {
+    ctx.beginPath()
+    for (let i = 0; i < shape.length; i++) {
+        const command = shape[i]
+        if (command.cmd === "s")
+            ctx.stroke()
+        else if (command.cmd === "f")
+            ctx.fill()
+        else if (command.cmd === "S")
+            ctx.strokeStyle = grayscale(command.data[0])
+        else if (command.cmd === "F")
+            ctx.fillStyle = grayscale(command.data[0])
+        else if (command.cmd === "W")
+            ctx.lineWidth = command.data[0]
+        else if (command.cmd === "l") {
+            for (let j = 0; j < command.data.length; j += 2)
+                ctx.lineTo(command.data[j] + x, command.data[j+1] + y)
+        } else if (command.cmd === "A")
+            ctx.beginPath()
+        else if (command.cmd === "Z")
+            ctx.closePath()
+        else if (command.cmd === "a") {
+            ctx.arc(command.data[0] + x, command.data[1] + y, command.data[2], command.data[3], command.data[4])
+        } else if (command.cmd === "r") {
+            ctx.fillRect(command.data[0] + x, command.data[1] + y, command.data[2], command.data[3])
+            ctx.strokeRect(command.data[0] + x, command.data[1] + y, command.data[2], command.data[3])
+        } else if (IS_DEVELOPMENT_BUILD)
+            throw new Error("Unexpected drawing command " + command.cmd)
+    }
 }

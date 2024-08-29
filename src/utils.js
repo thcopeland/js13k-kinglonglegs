@@ -6,9 +6,15 @@ export const xorshift = (rng) => {
 }
 
 
+export const grayscale = (x) => {
+    const grey = x.toString(16)
+    return "#"+grey+grey+grey
+}
+
+
 export const setStrokeAndFill = (stroke, fill, width) => {
-    ctx.strokeStyle = stroke
-    ctx.fillStyle = fill
+    ctx.strokeStyle = grayscale(stroke)
+    ctx.fillStyle = grayscale(fill)
     ctx.lineWidth = width
 }
 

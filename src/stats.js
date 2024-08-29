@@ -21,12 +21,18 @@ export const decrementCourage = () => {
 
 
 export const drawStats = () => {
-    setStrokeAndFill("#aaa", "#eee", "1")
+    setStrokeAndFill(2, 14, 1)
     for (let i = 0; i < courageDrawn; i++)
     {
         ctx.beginPath()
         ctx.arc(i * 40 + 40, 40, 8, 0, 2*Math.PI)
         ctx.fill()
+        ctx.stroke()
+    }
+    for (let i = courageDrawn; i < G.player_maxCourage; i++)
+    {
+        ctx.beginPath()
+        ctx.arc(i * 40 + 40, 40, 8, 0, 2*Math.PI)
         ctx.stroke()
     }
 }
@@ -45,8 +51,8 @@ export const updateStats = (dt) => {
                 } else {
                     particle = newParticle(0, undefined, courageDrawn * 40 + G.viewport_x, 40 + G.viewport_y, 10000, 0.005, 0.99, 0.5, 0.005)
                 }
-                particle.vx = 2 * Math.random() - 1
-                particle.vy = 2 * Math.random() - 1
+                particle.vx = 2 * (Math.random() - 0.5)
+                particle.vy = 2 * (Math.random() - 0.5)
                 courageParticles[i] = particle
                 addParticle(particle)
             }
