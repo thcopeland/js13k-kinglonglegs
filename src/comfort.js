@@ -21,7 +21,7 @@ export const updateWords = (obj, dt) => {
     if (obj.t === 0) {
         obj.lastParticleTime += dt
         if (Math.random() < 0.001*dt || obj.lastParticleTime > 500) {
-            const particle = newParticle(
+            addParticle(newParticle(
                 0,
                 undefined,
                 obj.x + 60 * (Math.random() - 0.5), 
@@ -30,14 +30,13 @@ export const updateWords = (obj, dt) => {
                 -0.002 + 0.001 * Math.random(),
                 0.99,
                 0.1,
-                0.001)
-            addParticle(particle)
+                0.001))
             obj.lastParticleTime = 0
         }
 
         if (Math.abs(G.player.x - obj.x) < 30 && Math.abs(G.player.y - obj.y) < 100) {
-            obj.t = 0.001
             zzfx(...[1.2,,268,.02,.19,.32,,3.6,,,305,.07,.03,,,,.16,.79,.13,,-1388])
+            obj.t = 0.001
             incrementCourage(true, obj.x, obj.y - 170)
         }
     } else if (obj.t < 500) {

@@ -1,8 +1,6 @@
-import { xorshift, grayscale } from "./utils"
+import { xorshift, setStrokeAndFill, grayscale, hypot } from "./utils"
 import { getAnimation } from "./animation"
 import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK } from "./shapes"
-import { setStrokeAndFill, hypot } from "./utils"
-
 
 export const drawWalker = (walker) => {
     ctx.save()
@@ -116,11 +114,9 @@ export const drawRoughCircle = (x, y, radius, rng, noise) => {
         rng = xorshift(rng)
         angle += (rng & 255) / 512 + 0.1
         const s = 1 + ((rng & 255) - 128) / 6000 * noise
-        points.push(Math.cos(angle) * radius*s + x)
-        points.push(Math.sin(angle) * radius*s + y)
+        points.push(Math.cos(angle) * radius*s + x, Math.sin(angle) * radius*s + y)
     }
-    points.push(points[0])
-    points.push(points[1])
+    points.push(points[0], points[1])
     drawCurve(points, rng, 0)
 }
 
