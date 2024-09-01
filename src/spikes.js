@@ -56,7 +56,7 @@ export const updateSpikes = (obj, dt) => {
         const dist = hypot(dx, dy)
         const proj = (dx * obj.extension[i/2] + dy * obj.extension[i/2]) / dist
         if (proj > 0.8 && dist < 50 && obj.extension[i/2] > 0.75) {
-            G.pendingDamage.push({ cause: "spikes", push_x: obj.positions[i+2], push_y: obj.positions[i+3] })
+            G.pendingDamage ||= { cause: "spikes", push_x: obj.positions[i+2], push_y: obj.positions[i+3] }
         }
 
         if (obj.speed_ !== undefined) {
