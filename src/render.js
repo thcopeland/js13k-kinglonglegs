@@ -2,6 +2,19 @@ import { xorshift, setStrokeAndFill, grayscale, hypot } from "./utils"
 import { getAnimation } from "./animation"
 import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK } from "./shapes"
 
+export const drawText = (x, y, text) => {
+    const lines = text.split("\n")
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i]
+        ctx.fillText(line, x, y)
+        if (i < lines.length-1) {
+            const m = ctx.measureText(line)
+            y += 1.5 * (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent)
+        }
+    }
+}
+
+
 export const drawWalker = (walker) => {
     ctx.save()
     ctx.translate(walker.x - G.viewport_x, walker.y - G.viewport_y)
@@ -203,4 +216,21 @@ export const drawShape = (shape, x, y) => {
         } else if (IS_DEVELOPMENT_BUILD)
             throw new Error("Unexpected drawing command " + command.cmd)
     }
+}
+
+
+export const drawMessages = () => {
+    ctx.save()
+    ctx.translate(-G.viewport_x, -G.viewport_y)
+    for (let i = 0; i < G.messages.length; i++) {
+        const m = G.messages[i]
+        if (m !== undefined) {
+            if (m.t > 1000)
+                ctx.fillStyle = "#000"
+            else
+                ctx.fillStyle = "#000000" + Math.floor(255 * m.t / 1000).toString(16)
+            drawText(m.x, m.y, m.text)
+        }
+    }
+    ctx.restore()
 }

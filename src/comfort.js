@@ -1,3 +1,4 @@
+import { addMessage } from "./message"
 import { addParticle, newParticle } from "./particles"
 import { incrementCourage } from "./stats"
 import { zzfx } from "./zzfx"
@@ -8,7 +9,7 @@ export const newWords = (text, x, y) => {
         text: text,
         x: x,
         y: y,
-        t: 0, // unused, using, used
+        t: 0,
         lastParticleTime: 0
     }
 }
@@ -38,6 +39,7 @@ export const updateWords = (obj, dt) => {
             zzfx(...[1.2,,268,.02,.19,.32,,3.6,,,305,.07,.03,,,,.16,.79,.13,,-1388])
             obj.t = 0.001
             incrementCourage(true, obj.x, obj.y - 170)
+            addMessage(obj.text, obj.x, obj.y - 200)
         }
     } else if (obj.t < 500) {
         obj.t += dt

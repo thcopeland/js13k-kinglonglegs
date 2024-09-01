@@ -1,11 +1,12 @@
 "use strict"
 
-import { drawWalker, drawLevel, drawBackdrop, drawParticles, drawGameObjects } from "./render"
+import { drawWalker, drawLevel, drawBackdrop, drawParticles, drawGameObjects, drawMessages } from "./render"
 import { newWalker } from "./walker"
 import { newParticle, addParticle, updateParticles } from "./particles"
 import { loadLevel, raycastTerrain } from "./level"
 import { updateSpikes } from "./spikes"
 import { updateWords } from "./comfort"
+import { updateMessages } from "./message"
 import { updateStats, incrementCourage, decrementCourage, drawStats } from "./stats"
 import { adjustViewport } from "./viewport"
 import { zzfx } from "./zzfx"
@@ -15,6 +16,8 @@ canvas.width = Math.min(1600, innerWidth-100)
 canvas.height = Math.min(900, innerHeight-100)
 ctx = canvas.getContext("2d")
 ctx.lineCap = "round"
+ctx.font = "16px sans-serif"
+ctx.textAlign = "center"
 
 G = {
     mode: 1, // Start, Game, Game Over
@@ -29,6 +32,7 @@ G = {
     npcs: [],
     objects: [],
     particles: [],
+    messages: [],
     viewport_x: 0,
     viewport_y: 0,
     viewport_w: canvas.width,
@@ -74,6 +78,8 @@ const loop = (time) => {
         updateParticles(dt)
         drawParticles()
         drawLevel()
+        updateMessages(dt)
+        drawMessages()
         updateStats(dt)
         drawStats()
 

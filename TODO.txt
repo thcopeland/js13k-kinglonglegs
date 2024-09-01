@@ -7,7 +7,9 @@
 - spikes
 * panic
 * level brightness
-* words of comfort
+- words of comfort
+* level editor
+* animations (IK or hardcoded)
 * final boss
 * end screen
 * talkers
