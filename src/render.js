@@ -1,5 +1,6 @@
 import { xorshift, setStrokeAndFill, grayscale, hypot } from "./utils"
 import { getAnimation } from "./animation"
+import { WALKER_SKULL, WALKER_FIBULA, WALKER_FEMUR } from "./walker"
 import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK } from "./shapes"
 
 export const drawText = (x, y, text) => {
@@ -18,16 +19,43 @@ export const drawText = (x, y, text) => {
 export const drawWalker = (walker) => {
     ctx.save()
     ctx.translate(walker.x - G.viewport_x, walker.y - G.viewport_y)
-    ctx.scale(walker.facing_*walker.scale_, walker.scale_)
-    setStrokeAndFill(3, 8, 2)
-    const animation = getAnimation(walker.anim, walker.anim_time)
-    drawCurve(animation.slice(2, 8))
-    drawCurve(animation.slice(8, 14))
-    drawRoughCircle(animation[0], animation[1], 40, walker.id_, 1)
-    setStrokeAndFill(3, 0, 2)
+    // ctx.scale(walker.facing_*walker.scale_, walker.scale_)
+    setStrokeAndFill(3, 9, 2)
+    for (let i = 0; i < walker.legs.length; i++) {
+        const leg = walker.legs[i]
+        // Solve the two-segment inverse kinematics problem. Something like
+        // FABRIK is pretty simple but trigonometry is sufficient.
+        const c = Math.min(10000 + WALKER_FIBULA + WALKER_FEMUR, Math.hypot(leg[0] - leg[2], leg[1] - leg[3]))
+        // Use the Law of Cosines to find the angle between the femur and fibula.
+        const theta = Math.acos((WALKER_FIBULA*WALKER_FIBULA + WALKER_FEMUR*WALKER_FEMUR - c*c) / (2 * WALKER_FEMUR * WALKER_FIBULA)) || Math.PI
+        // Use the Law of Sines to find the angle between the long edge and the femur.
+        let phi = Math.PI - theta - (Math.asin(WALKER_FEMUR * Math.sin(theta) / c) || 0) // Law of Sines
+        if (walker.facing_ < 0)
+            phi = -phi
+        // Calculate the angle betwen the vertical and the femur.
+        const alpha = Math.PI/2 - phi - Math.asin((leg[2] - leg[0]) / c)
+        ctx.beginPath()
+        ctx.moveTo(leg[0], leg[1])
+        ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha), leg[1] + WALKER_FEMUR * Math.sin(alpha))
+        // ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha) - WALKER_FIBULA * Math.cos(Math.PI - (alpha + theta)), 
+        //            leg[1] + WALKER_FEMUR * Math.sin(alpha) - WALKER_FIBULA * Math.sin(Math.PI - (alpha + theta)))
+        ctx.lineTo(leg[2], leg[3])
+        ctx.stroke()
+    }
+
     ctx.beginPath()
-    ctx.arc(animation[0] + 20, animation[1], 3, 0, 2*Math.PI)
-    ctx.fill()
+    ctx.arc(0, 0, WALKER_SKULL, 0, 2 * Math.PI)
+    // ctx.fill()
+    ctx.stroke()
+
+    // const animation = getAnimation(walker.anim, walker.anim_time)
+    // drawCurve(animation.slice(2, 8))
+    // drawCurve(animation.slice(8, 14))
+    // drawRoughCircle(animation[0], animation[1], 40, walker.id_, 1)
+    // setStrokeAndFill(3, 0, 2)
+    // ctx.beginPath()
+    // ctx.arc(animation[0] + 20, animation[1], 3, 0, 2*Math.PI)
+    // ctx.fill()
     ctx.restore()
 }
 
