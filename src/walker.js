@@ -82,7 +82,7 @@ export const updateWalker = (walker, dt) => {
         walker.vx = -1
 }
 
-const legSpeed = (x, vx) => x*x*x / (Math.abs(x*x*x) + 1) * (0.8 * Math.abs(vx) + 0.3)
+const legSpeed = (x, vx) => x*x*x / (Math.abs(x*x*x) + 1) * (0.8 * Math.abs(vx) + 0.4   )
 
 const updateLegWalking = (walker, leg, dt) => {
     ctx.save()
@@ -121,7 +121,7 @@ const updateLegWalking = (walker, leg, dt) => {
     if (leg[6] === 1) {
         leg[2] -= dt * legSpeed(leg[2] - leg[0], walker.vx)
         leg[3] -= dt * legSpeed(leg[3] - 0.9 * LEG_LENGTH, walker.vx)
-        if (Math.abs(leg[2] - leg[0]) < 10)
+        if (Math.abs(leg[2] - leg[0]) < 20)
             leg[6] = 2
     }
 
@@ -129,7 +129,7 @@ const updateLegWalking = (walker, leg, dt) => {
     if (leg[6] === 2) {
         let skip = false
         for (let i = 0; i < 10; i++) {
-            const angle = (i % 2 ? -1 : 1) * i * 0.05 + (Math.PI/2 - 0.6 * walker.facing_)
+            const angle = (i % 2 ? -1 : 1) * i * 0.05 + (Math.PI/2 - 0 * walker.facing_)
             const collision = raycastTerrain(walker.x + leg[0], walker.y + leg[1], LEG_LENGTH * Math.cos(angle), LEG_LENGTH * Math.sin(angle), 5)
             ctx.strokeStyle = "#000"
             if (collision.t < 0.5)

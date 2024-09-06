@@ -25,21 +25,20 @@ export const drawWalker = (walker) => {
         const leg = walker.legs[i]
         // Solve the two-segment inverse kinematics problem. Something like
         // FABRIK is pretty simple but trigonometry is sufficient.
-        const c = Math.min(10000 + WALKER_FIBULA + WALKER_FEMUR, Math.hypot(leg[0] - leg[2], leg[1] - leg[3]))
+        const c = Math.hypot(leg[0] - leg[2], leg[1] - leg[3])
         // Use the Law of Cosines to find the angle between the femur and fibula.
         const theta = Math.acos((WALKER_FIBULA*WALKER_FIBULA + WALKER_FEMUR*WALKER_FEMUR - c*c) / (2 * WALKER_FEMUR * WALKER_FIBULA)) || Math.PI
         // Use the Law of Sines to find the angle between the long edge and the femur.
-        let phi = Math.PI - theta - (Math.asin(WALKER_FEMUR * Math.sin(theta) / c) || 0) // Law of Sines
-        if (walker.facing_ < 0)
-            phi = -phi
-        // Calculate the angle betwen the vertical and the femur.
+        const phi = (Math.PI - theta - (Math.asin(WALKER_FEMUR * Math.sin(theta) / c) || 0)) * walker.facing_
+        // Calculate the angle between the horizontal and the femur.
         const alpha = Math.PI/2 - phi - Math.asin((leg[2] - leg[0]) / c)
+        // Calculate the angle between the horizontal and the fibula.
+        const beta = alpha + (Math.PI - theta) * walker.facing_
         ctx.beginPath()
         ctx.moveTo(leg[0], leg[1])
         ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha), leg[1] + WALKER_FEMUR * Math.sin(alpha))
-        // ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha) - WALKER_FIBULA * Math.cos(Math.PI - (alpha + theta)), 
-        //            leg[1] + WALKER_FEMUR * Math.sin(alpha) - WALKER_FIBULA * Math.sin(Math.PI - (alpha + theta)))
-        ctx.lineTo(leg[2], leg[3])
+        ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha) + WALKER_FIBULA * Math.cos(beta), 
+                   leg[1] + WALKER_FEMUR * Math.sin(alpha) + WALKER_FIBULA * Math.sin(beta));
         ctx.stroke()
     }
 
