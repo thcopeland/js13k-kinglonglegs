@@ -6,6 +6,10 @@ export const WALKER_SKULL = 30
 const LEG_LENGTH = WALKER_FEMUR + WALKER_FIBULA
 const LEG_OFFSET = LEG_LENGTH + WALKER_SKULL / 2
 
+const LEG_PLANTED = 0
+const LEG_LIFTING = 1
+const LEG_LOWERING = 2
+
 export const newWalker = (id_, x, y, legNum) => {
     const legs = []
     // legNum = 10
@@ -15,7 +19,7 @@ export const newWalker = (id_, x, y, legNum) => {
         const lx = 0.5 * WALKER_SKULL * (2 * l - 1)
         const ly = WALKER_SKULL-Math.abs(lx/2) - 4
         // start, end, target, time 
-        legs.push([lx, ly, lx, ly + LEG_LENGTH, x, y + LEG_LENGTH, 0])
+        legs.push([lx, ly, lx, ly + LEG_LENGTH, x, y + LEG_LENGTH, LEG_LOWERING])
     }
 
     return {
@@ -34,6 +38,10 @@ export const updateWalker = (walker, dt) => {
     const ground = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, 0, 1, 30)
     const isGrounded = ground.t < 2*dt + 2
 
+    for (let i = 0; i < walker.legs.length; i++) {
+        updateLeg(walker, walker.legs[i], dt)
+    }
+
     if (walker.state === 0) {
 
     } else if (walker.state === 1) {
@@ -43,9 +51,6 @@ export const updateWalker = (walker, dt) => {
             walker.vy = 0
         } else {
             walker.state = 3
-        }
-        for (let i = 0; i < walker.legs.length; i++) {
-            updateLegWalking(walker, walker.legs[i], dt)
         }
     } else if (walker.state === 3) {
         if (isGrounded) {
@@ -82,9 +87,9 @@ export const updateWalker = (walker, dt) => {
         walker.vx = -1
 }
 
-const legSpeed = (x, vx) => x*x*x / (Math.abs(x*x*x) + 1) * (0.8 * Math.abs(vx) + 0.4   )
+const legSpeed = (x, vx) => x*x*x / (Math.abs(x*x*x) + 1) * (0.5 * Math.abs(vx) + 0.4)
 
-const updateLegWalking = (walker, leg, dt) => {
+const updateLeg = (walker, leg, dt) => {
     ctx.save()
     ctx.translate(walker.x - G.viewport_x, walker.y - G.viewport_y)
     ctx.beginPath()
@@ -106,31 +111,37 @@ const updateLegWalking = (walker, leg, dt) => {
     ctx.arc(leg[4] - walker.x, leg[5] - walker.y, 2, 0, 6.28)
     ctx.fill()
 
-    // Foot is planted.
-    if (leg[6] === 0) {
+    // Ensure the leg doesn't stretch too much.
+    const stretch = LEG_LENGTH / Math.hypot(leg[2] - leg[0], leg[3] - leg[1])
+    if (stretch < 0.8 ) {
+        leg[2] = leg[0] + (leg[2] - leg[0]) * stretch
+        leg[3] = leg[1] + (leg[3] - leg[1]) * stretch
+        leg[6] = LEG_LOWERING
+    }
+
+    if (leg[6] === LEG_PLANTED) {
         leg[2] = leg[4] - walker.x
         leg[3] = leg[5] - walker.y
-        // Lift the foot.
-        const anyLifted = walker.legs.filter(leg => leg[6] !== 0).length > 0
-        if (!anyLifted && Math.hypot(leg[2] - leg[0], leg[3] - leg[1]) > LEG_LENGTH) {
-            leg[6] = 1
-        }
-    }
-
-    // Raising the foot.
-    if (leg[6] === 1) {
+        if (walker.legs.filter(leg => leg[6] !== 0).length < walker.legs.length / 3 &&
+            Math.hypot(leg[2] - leg[0], leg[3] - leg[1]) > 1.01 * LEG_LENGTH)
+            leg[6] = LEG_LIFTING
+    } else if (leg[6] === LEG_LIFTING) {
         leg[2] -= dt * legSpeed(leg[2] - leg[0], walker.vx)
-        leg[3] -= dt * legSpeed(leg[3] - 0.9 * LEG_LENGTH, walker.vx)
+        leg[3] -= dt * legSpeed(leg[3] - 0.8 * LEG_LENGTH, (walker.vx + walker.vy)/2)
         if (Math.abs(leg[2] - leg[0]) < 20)
-            leg[6] = 2
-    }
-
-    // Lowering the foot.
-    if (leg[6] === 2) {
-        let skip = false
-        for (let i = 0; i < 10; i++) {
-            const angle = (i % 2 ? -1 : 1) * i * 0.05 + (Math.PI/2 - 0 * walker.facing_)
-            const collision = raycastTerrain(walker.x + leg[0], walker.y + leg[1], LEG_LENGTH * Math.cos(angle), LEG_LENGTH * Math.sin(angle), 5)
+            leg[6] = LEG_LOWERING
+    } else if (leg[6] === LEG_LOWERING) {
+        let bestCollision = undefined
+        for (let i = 0; i < 20; i++) {
+            const angle = (i - 10) * 0.04 + (Math.PI/2 - walker.vx * dt * 0.03)
+            const collision = raycastTerrain(
+                walker.x + leg[0], 
+                walker.y + leg[1], 
+                LEG_LENGTH * Math.cos(angle), 
+                LEG_LENGTH * Math.sin(angle),
+                5)
+            if (bestCollision === undefined || bestCollision.t > collision.t)
+                bestCollision = collision
             ctx.strokeStyle = "#000"
             if (collision.t < 0.5)
                 ctx.fillStyle = "#f5f"
@@ -141,20 +152,24 @@ const updateLegWalking = (walker, leg, dt) => {
             ctx.beginPath()
             ctx.arc(collision.dest_x - walker.x, collision.dest_y - walker.y, 2, 0, 6.28)
             ctx.fill()
-            if (collision.t < 0.97 &&  !skip) {
-                leg[4] = collision.dest_x
-                leg[5] = collision.dest_y
-                const dx = leg[2] - leg[4] + walker.x
-                const dy = leg[3] - leg[5] + walker.y
-                leg[2] -= dt * legSpeed(dx, walker.vx)
-                leg[3] -= dt * legSpeed(dy, walker.vy)
-                // Plant the foot.
-                if (Math.hypot(dx, dy) < 8) {
-                    leg[6] = 0
-                }
-                // break
-                skip = true
-            }
+        }
+
+        if (bestCollision !== undefined && bestCollision.t < 0.98) {
+            leg[4] = bestCollision.dest_x
+            leg[5] = bestCollision.dest_y
+            const dx = leg[2] - leg[4] + walker.x
+            const dy = leg[3] - leg[5] + walker.y
+            leg[2] -= dt * legSpeed(dx, walker.vx)
+            leg[3] -= dt * legSpeed(dy, (walker.vx + walker.vy)/2)
+            if (Math.hypot(dx, dy) < 10) 
+                leg[6] = LEG_PLANTED
+        } else {
+            leg[4] = leg[0] + walker.x
+            leg[5] = leg[1] + walker.y + LEG_LENGTH * 0.99
+            const dx = leg[2] - leg[4] + walker.x
+            const dy = leg[3] - leg[5] + walker.y
+            leg[2] -= dt * 0.05 * dx
+            leg[3] -= dt * 0.05 * dy
         }
     }
     ctx.restore()
