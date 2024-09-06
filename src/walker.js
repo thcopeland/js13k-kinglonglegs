@@ -1,5 +1,6 @@
 import { raycastTerrain } from "./level"
 
+// TODO: allow per-character (per-leg?) leg lengths
 export const WALKER_FEMUR = 40
 export const WALKER_FIBULA = 50
 export const WALKER_SKULL = 30
@@ -28,15 +29,15 @@ export const newWalker = (id_, x, y, legNum) => {
         vx: 0,
         vy: 0,
         facing_: 1,
-        scale_: 1,
         state: 1, // Idle, Running, Jumping, Falling, Collapsing
-        legs
+        legs,
+        isGrounded: false
     }
 }
 
 export const updateWalker = (walker, dt) => {
     const ground = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, 0, 1, 30)
-    const isGrounded = ground.t < 2*dt + 2
+    walker.isGrounded = ground.t < 2*dt + 2
 
     for (let i = 0; i < walker.legs.length; i++) {
         updateLeg(walker, walker.legs[i], dt)
@@ -45,7 +46,7 @@ export const updateWalker = (walker, dt) => {
     if (walker.state === 0) {
 
     } else if (walker.state === 1) {
-        if (isGrounded)
+        if (walker.isGrounded && walker.vy > -1)
         {
             walker.y = ground.contact_y + 0.01 * ground.normal_y * dt - LEG_OFFSET - 1
             walker.vy = 0
@@ -53,7 +54,7 @@ export const updateWalker = (walker, dt) => {
             walker.state = 3
         }
     } else if (walker.state === 3) {
-        if (isGrounded) {
+        if (walker.isGrounded) {
             walker.state = 1
             walker.vy = 0
         } else {

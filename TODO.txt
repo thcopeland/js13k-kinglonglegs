@@ -9,7 +9,7 @@
 * level brightness
 - words of comfort
 * level editor
-* animations (IK or hardcoded)
+- animations (IK or hardcoded)
 * final boss
 * end screen
 * talkers
@@ -17,7 +17,7 @@
 * diving ghosts
 
 # Optional
-* IK for walking, jumping
+- IK for walking, jumping
 * adventurers
 * dust
 * music

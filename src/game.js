@@ -32,7 +32,8 @@ export const init = () => {
         viewport_h: ctx.canvas.height,
         keys: {},
         t: 0,
-        lastDash: 0
+        lastDash: 0,
+        lastJump: 0
     }
     loadLevel(0)
     ctx.lineCap = "round"
@@ -57,8 +58,6 @@ export const game = (dt) => {
     updateMessages(dt)
     updateStats(dt)
     adjustViewport(dt)
-
-    updateWalker(G.player, dt)
 
     // if (G.invincibility > 0)
     //     G.invincibility -= dt
@@ -87,15 +86,14 @@ export const game = (dt) => {
     //     G.player.vy = 0
     // }
 
-    if (G.keys["z"] && isGrounded) {
+    if (G.keys["z"] && G.player.isGrounded) {
         zzfx(...[,,173,.03,.06,.05,1,.6,,91,,,,,,,,.6,.05])
-        G.player.vy = -4
-        G.player.anim_time = 0
+        G.player.vy = -2
     }
     if (G.keys["c"] && G.t - G.lastDash > 300) {
         zzfx(...[,.1,800,.02,.01,.2,1,,-0.1,.1,,,,3,,,.1])
         G.player.vx = 4*G.player.facing_
-        G.lastDash = G.time
+        G.lastDash = G.t
     }
     if (G.keys["ArrowUp"])
         G.player.vy -= 0.2
@@ -109,6 +107,8 @@ export const game = (dt) => {
         G.player.facing_ = 1
         G.player.vx += 0.15
     }
+
+    updateWalker(G.player, dt)
 
     // let movementTime = dt
     // for (let i = 0; i < 3; i++) {
