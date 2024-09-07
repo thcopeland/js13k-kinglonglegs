@@ -41,7 +41,7 @@ export const drawStats = () => {
 export const updateStats = (dt) => {
     if (couragePending.length > 0) {
         const pending = couragePending[0]
-        if (courageParticles.length === 0) 
+        if (courageParticles.length === 0)
         {
             for (let i = 0; i < 10; i++) {
                 let particle

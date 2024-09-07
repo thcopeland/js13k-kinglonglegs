@@ -19,7 +19,7 @@ export const newWalker = (id_, x, y, legNum) => {
         // const l = 0
         const lx = 0.5 * WALKER_SKULL * (2 * l - 1)
         const ly = WALKER_SKULL-Math.abs(lx/2) - 4
-        // start, end, target, time 
+        // start, end, target, time
         legs.push([lx, ly, lx, ly + LEG_LENGTH, x, y + LEG_LENGTH, LEG_LOWERING])
     }
 
@@ -39,16 +39,14 @@ export const updateWalker = (walker, dt) => {
     const ground = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, 0, 1, 30)
     walker.isGrounded = ground.t < 2*dt + 2
 
-    for (let i = 0; i < walker.legs.length; i++) {
-        updateLeg(walker, walker.legs[i], dt)
-    }
+    updateLegs(walker, dt)
 
     if (walker.state === 0) {
 
     } else if (walker.state === 1) {
         if (walker.isGrounded && walker.vy > -1)
         {
-            walker.y = ground.contact_y + 0.01 * ground.normal_y * dt - LEG_OFFSET - 1
+            walker.y = ground.contact_y + 0.01 * ground.normal_y * dt - LEG_OFFSET
             walker.vy = 0
         } else {
             walker.state = 3
@@ -58,7 +56,6 @@ export const updateWalker = (walker, dt) => {
             walker.state = 1
             walker.vy = 0
         } else {
-            walker.y += walker.vy * dt
             walker.vy += 0.01 * dt
         }
     }
@@ -90,88 +87,90 @@ export const updateWalker = (walker, dt) => {
 
 const legSpeed = (x, vx) => x*x*x / (Math.abs(x*x*x) + 1) * (0.5 * Math.abs(vx) + 0.4)
 
-const updateLeg = (walker, leg, dt) => {
+const updateLegs = (walker, dt) => {
     ctx.save()
     ctx.translate(walker.x - G.viewport_x, walker.y - G.viewport_y)
     ctx.beginPath()
-    if (leg[6] === 0)
-        ctx.fillStyle = "#0f0"
-    else if (leg[6] === 1)
-        ctx.fillStyle = "#0ff"
-    else if (leg[6] === 2)
-        ctx.fillStyle = "#00f"
-    ctx.arc(leg[0], leg[1], 2, 0, 6.28)
-    ctx.fill()
+    walker.legs.toSorted((a, b) => Math.hypot(b[2] - b[0], b[3] - b[1]) - Math.hypot(a[2] - a[0], a[3] - a[1])).forEach((leg) => {
+        if (leg[6] === 0)
+            ctx.fillStyle = "#0f0"
+        else if (leg[6] === 1)
+            ctx.fillStyle = "#0ff"
+        else if (leg[6] === 2)
+            ctx.fillStyle = "#00f"
+        ctx.arc(leg[0], leg[1], 2, 0, 6.28)
+        ctx.fill()
 
-    ctx.beginPath()
-    ctx.arc(leg[2], leg[3], 2, 0, 6.28)
-    ctx.fill()
+        ctx.beginPath()
+        ctx.arc(leg[2], leg[3], 2, 0, 6.28)
+        ctx.fill()
 
-    ctx.fillStyle = "#f00"
-    ctx.beginPath()
-    ctx.arc(leg[4] - walker.x, leg[5] - walker.y, 2, 0, 6.28)
-    ctx.fill()
+        ctx.fillStyle = "#f00"
+        ctx.beginPath()
+        ctx.arc(leg[4] - walker.x, leg[5] - walker.y, 2, 0, 6.28)
+        ctx.fill()
 
-    // Ensure the leg doesn't stretch too much.
-    const stretch = LEG_LENGTH / Math.hypot(leg[2] - leg[0], leg[3] - leg[1])
-    if (stretch < 0.8 ) {
-        leg[2] = leg[0] + (leg[2] - leg[0]) * stretch
-        leg[3] = leg[1] + (leg[3] - leg[1]) * stretch
-        leg[6] = LEG_LOWERING
-    }
-
-    if (leg[6] === LEG_PLANTED) {
-        leg[2] = leg[4] - walker.x
-        leg[3] = leg[5] - walker.y
-        if (walker.legs.filter(leg => leg[6] !== 0).length < walker.legs.length / 3 &&
-            Math.hypot(leg[2] - leg[0], leg[3] - leg[1]) > 1.01 * LEG_LENGTH)
-            leg[6] = LEG_LIFTING
-    } else if (leg[6] === LEG_LIFTING) {
-        leg[2] -= dt * legSpeed(leg[2] - leg[0], walker.vx)
-        leg[3] -= dt * legSpeed(leg[3] - 0.8 * LEG_LENGTH, (walker.vx + walker.vy)/2)
-        if (Math.abs(leg[2] - leg[0]) < 20)
+        // Ensure the leg doesn't stretch too much.
+        const stretch = LEG_LENGTH / Math.hypot(leg[2] - leg[0], leg[3] - leg[1])
+        if (stretch < 0.8 ) {
+            leg[2] = leg[0] + (leg[2] - leg[0]) * stretch
+            leg[3] = leg[1] + (leg[3] - leg[1]) * stretch
             leg[6] = LEG_LOWERING
-    } else if (leg[6] === LEG_LOWERING) {
-        let bestCollision = undefined
-        for (let i = 0; i < 20; i++) {
-            const angle = (i - 10) * 0.04 + (Math.PI/2 - walker.vx * dt * 0.03)
-            const collision = raycastTerrain(
-                walker.x + leg[0], 
-                walker.y + leg[1], 
-                LEG_LENGTH * Math.cos(angle), 
-                LEG_LENGTH * Math.sin(angle),
-                5)
-            if (bestCollision === undefined || bestCollision.t > collision.t)
-                bestCollision = collision
-            ctx.strokeStyle = "#000"
-            if (collision.t < 0.5)
-                ctx.fillStyle = "#f5f"
-            else if (collision.t < 0.9)
-                ctx.fillStyle = "#f0f"
-            else
-                ctx.fillStyle = "#555"
-            ctx.beginPath()
-            ctx.arc(collision.dest_x - walker.x, collision.dest_y - walker.y, 2, 0, 6.28)
-            ctx.fill()
         }
 
-        if (bestCollision !== undefined && bestCollision.t < 0.98) {
-            leg[4] = bestCollision.dest_x
-            leg[5] = bestCollision.dest_y
-            const dx = leg[2] - leg[4] + walker.x
-            const dy = leg[3] - leg[5] + walker.y
-            leg[2] -= dt * legSpeed(dx, walker.vx)
-            leg[3] -= dt * legSpeed(dy, (walker.vx + walker.vy)/2)
-            if (Math.hypot(dx, dy) < 10) 
-                leg[6] = LEG_PLANTED
-        } else {
-            leg[4] = leg[0] + walker.x
-            leg[5] = leg[1] + walker.y + LEG_LENGTH * 0.99
-            const dx = leg[2] - leg[4] + walker.x
-            const dy = leg[3] - leg[5] + walker.y
-            leg[2] -= dt * 0.05 * dx
-            leg[3] -= dt * 0.05 * dy
+        if (leg[6] === LEG_PLANTED) {
+            leg[2] = leg[4] - walker.x
+            leg[3] = leg[5] - walker.y
+            if (walker.legs.filter(leg => leg[6] !== 0).length < walker.legs.length / 3 &&
+                Math.hypot(leg[2] - leg[0], leg[3] - leg[1]) > LEG_LENGTH)
+                leg[6] = LEG_LIFTING
+        } else if (leg[6] === LEG_LIFTING) {
+            leg[2] -= dt * legSpeed(leg[2] - leg[0], walker.vx)
+            leg[3] -= dt * legSpeed(leg[3] - 0.8 * LEG_LENGTH, (walker.vx + walker.vy)/2)
+            if (Math.abs(leg[2] - leg[0]) < 20)
+                leg[6] = LEG_LOWERING
+        } else if (leg[6] === LEG_LOWERING) {
+            let bestCollision = undefined
+            for (let i = 0; i < 20; i++) {
+                const angle = (i - 10) * 0.04 + (Math.PI/2 - walker.vx * dt * 0.03)
+                const collision = raycastTerrain(
+                    walker.x + leg[0],
+                    walker.y + leg[1],
+                    LEG_LENGTH * Math.cos(angle),
+                    LEG_LENGTH * Math.sin(angle),
+                    5)
+                if (bestCollision === undefined || bestCollision.t > collision.t)
+                    bestCollision = collision
+                ctx.strokeStyle = "#000"
+                if (collision.t < 0.5)
+                    ctx.fillStyle = "#f5f"
+                else if (collision.t < 0.9)
+                    ctx.fillStyle = "#f0f"
+                else
+                    ctx.fillStyle = "#555"
+                ctx.beginPath()
+                ctx.arc(collision.dest_x - walker.x, collision.dest_y - walker.y, 2, 0, 6.28)
+                ctx.fill()
+            }
+
+            if (bestCollision !== undefined && bestCollision.t < 0.98) {
+                leg[4] = bestCollision.dest_x
+                leg[5] = bestCollision.dest_y
+                const dx = leg[2] - leg[4] + walker.x
+                const dy = leg[3] - leg[5] + walker.y
+                leg[2] -= dt * legSpeed(dx, walker.vx)
+                leg[3] -= dt * legSpeed(dy, (walker.vx + walker.vy)/2)
+                if (Math.hypot(dx, dy) < 10)
+                    leg[6] = LEG_PLANTED
+            } else {
+                leg[4] = leg[0] + walker.x + (walker.isGrounded ? LEG_LENGTH/20*Math.cos(G.t / 150 + walker.id_) : 0)
+                leg[5] = leg[1] + walker.y + LEG_LENGTH * 0.99
+                const dx = leg[2] - leg[4] + walker.x
+                const dy = leg[3] - leg[5] + walker.y
+                leg[2] -= dt * 0.05 * dx
+                leg[3] -= dt * 0.05 * dy
+            }
         }
-    }
+    })
     ctx.restore()
 }

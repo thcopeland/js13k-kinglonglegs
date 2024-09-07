@@ -5,7 +5,7 @@ import { hypot } from "./utils"
  * life
  * lifetime
  * x, y
- * vx, vy 
+ * vx, vy
  * g
  * jitter
  * wind
@@ -63,8 +63,8 @@ export const updateParticles = (dt) => {
             } else {
                 particle.x += particle.vx * dt
                 particle.y += particle.vy * dt
-                particle.vx *= Math.pow(particle.drag, dt) 
-                particle.vy *= Math.pow(particle.drag, dt) 
+                particle.vx *= Math.pow(particle.drag, dt)
+                particle.vy *= Math.pow(particle.drag, dt)
                 particle.vx += particle.ax * dt + particle.wind * dt
                 particle.vy += (particle.g + particle.ay) * dt
                 particle.ax *= Math.pow(0.99, dt)

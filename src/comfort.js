@@ -25,7 +25,7 @@ export const updateWords = (obj, dt) => {
             addParticle(newParticle(
                 0,
                 undefined,
-                obj.x + 60 * (Math.random() - 0.5), 
+                obj.x + 60 * (Math.random() - 0.5),
                 obj.y - 180,
                 5000 + 300 * Math.random(),
                 -0.002 + 0.001 * Math.random(),

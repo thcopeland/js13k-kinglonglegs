@@ -1,5 +1,5 @@
 
-const parseShape = (shape) => 
+const parseShape = (shape) =>
     shape.matchAll(/[a-zA-Z][^a-zA-Z]*/g).map(match => ({
         cmd: match[0][0],
         data: match[0].substring(1).trim().split(/[\s,]+/).map(parseFloat)

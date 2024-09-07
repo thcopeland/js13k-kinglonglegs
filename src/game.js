@@ -88,11 +88,11 @@ export const game = (dt) => {
 
     if (G.keys["z"] && G.player.isGrounded) {
         zzfx(...[,,173,.03,.06,.05,1,.6,,91,,,,,,,,.6,.05])
-        G.player.vy = -2
+        G.player.vy = -4
     }
     if (G.keys["c"] && G.t - G.lastDash > 300) {
         zzfx(...[,.1,800,.02,.01,.2,1,,-0.1,.1,,,,3,,,.1])
-        G.player.vx = 4*G.player.facing_
+        G.player.vx = 1*G.player.facing_
         G.lastDash = G.t
     }
     if (G.keys["ArrowUp"])

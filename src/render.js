@@ -37,7 +37,7 @@ export const drawWalker = (walker) => {
         ctx.beginPath()
         ctx.moveTo(leg[0], leg[1])
         ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha), leg[1] + WALKER_FEMUR * Math.sin(alpha))
-        ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha) + WALKER_FIBULA * Math.cos(beta), 
+        ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha) + WALKER_FIBULA * Math.cos(beta),
                    leg[1] + WALKER_FEMUR * Math.sin(alpha) + WALKER_FIBULA * Math.sin(beta));
         ctx.stroke()
     }
