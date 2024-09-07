@@ -1,6 +1,8 @@
 "use strict"
 
 import { init, game } from "./game"
+import { initEditor } from "./editor"
+
 
 const canvas = document.querySelector("canvas")
 canvas.width = Math.min(1600, innerWidth-100)
@@ -10,8 +12,18 @@ ctx = canvas.getContext("2d")
 G = { }
 init()
 
-document.onkeyup = (evt) => G.keys[evt.key] = false
-document.onkeydown = (evt) => G.keys[evt.key] = true
+addEventListener("keydown", (evt) => G.keys[evt.key] = true)
+addEventListener("keyup", (evt) => G.keys[evt.key] = false)
+
+
+if (IS_DEVELOPMENT_BUILD) {
+    addEventListener("keydown", (evt) => {
+        if (evt.key === "e" && !E.enabled) {
+            initEditor()
+        }
+    })
+}
+
 window.onblur = () => {
     Object.keys(G.keys).forEach(key => G.keys[key] = false)
     lastTime = undefined

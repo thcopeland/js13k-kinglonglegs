@@ -71,7 +71,7 @@ export const drawLevel = () => {
     ctx.save()
     ctx.translate(-G.viewport_x, -G.viewport_y)
     setStrokeAndFill(0, 10, 1)
-    G.level.map.forEach((block, seed) => {
+    G.level.walls.forEach((block, seed) => {
         const roughness = block[0]
         const points = block.slice(1)
         ctx.beginPath()
