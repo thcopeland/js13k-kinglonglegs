@@ -39,6 +39,7 @@ export const newSpikes = (vertices, reach, speed_, delay) => {
         reach: reach,
         positions: positions,
         extension: extension,
+        vertices: vertices,
         speed_: speed_,
         delay: delay
     }

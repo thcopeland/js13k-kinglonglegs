@@ -6,6 +6,8 @@ export const addTool = () => {
         addWall(x, y)
     } else if (E.objectType === "collider") {
         addCollider(x, y)
+    } else if (E.objectType === "spikes") {
+        addSpikes(x, y)
     }
 
     syncLevel()
@@ -36,7 +38,7 @@ const addWall = (x, y) => {
         E.objectSubIndex = E.objectData.points.length
         E.objectData.points.push(x, y)
     } else {
-        if (Math.hypot(x - E.objectData.points[0], y - E.objectData.points[1]) < 30) {
+        if (Math.hypot(x - E.objectData.points[0], y - E.objectData.points[1]) < 10) {
             E.objectSubIndex = E.objectData.points.length
             E.objectData.points.push(E.objectData.points[0], E.objectData.points[1])
         } else {
@@ -62,12 +64,47 @@ const addCollider = (x, y) => {
         E.objectSubIndex = E.objectData.points.length
         E.objectData.points.push(x, y)
     } else {
-        if (Math.hypot(x - E.objectData.points[0], y - E.objectData.points[1]) < 30) {
+        if (Math.hypot(x - E.objectData.points[0], y - E.objectData.points[1]) < 10) {
             E.objectSubIndex = E.objectData.points.length
             E.objectData.points.push(E.objectData.points[0], E.objectData.points[1])
         } else {
             E.objectSubIndex = E.objectData.points.length
             E.objectData.points.push(x, y)
         }
+    }
+}
+
+
+const addSpikes = (x, y) => {
+    if (E.objectData === undefined || E.objectData.type !== "spikes") {
+        E.objectData = {
+            type: "spikes",
+            points: [],
+            speed: E.config.spikesSpeed,
+            reach: E.config.spikesReach,
+            delay: E.config.spikesDelay
+        }
+        E.objectIndex = E.objects.length
+        E.objectSubIndex = -1
+        E.objects.push(E.objectData)
+    }
+
+
+    if (E.objectData.points.length >= 4 && Math.hypot(x - E.objectData.points[0], y - E.objectData.points[1]) < 10) {
+        E.objectSubIndex = E.objectData.points.length
+        E.objectData.points.push(E.objectData.points[0], E.objectData.points[1])
+    } else {
+        for (let wall of E.walls) {
+            for (let i = 0; i < wall.points.length; i += 2) {
+                if (Math.hypot(x - wall.points[i], y - wall.points[i+1]) < 20) {
+                    x = wall.points[i]
+                    y = wall.points[i+1]
+                    break
+                }
+            }
+        }
+
+        E.objectSubIndex = E.objectData.points.length
+        E.objectData.points.push(x, y)
     }
 }

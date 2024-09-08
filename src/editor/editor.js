@@ -26,7 +26,7 @@ export const initEditor = () => {
             wallRoughness: 30,
             wordsText: "",
             spikesReach: 30,
-            spikesSpeed: 0.03,
+            spikesSpeed: 0.003,
             spikesDelay: 10
         },
         draw: drawEditor
@@ -236,6 +236,9 @@ const createConfig = (container) => {
         E.config.spikesReach = parseInt(reachField.value)
         E.config.spikesSpeed = parseFloat(speedField.value)
         E.config.spikesDelay = parseInt(delayField.value)
+        if (isNaN(E.config.spikesSpeed)) {
+            E.config.spikesSpeed = undefined
+        }
     }
     reachField.addEventListener("change", onSpikesSettingsChange)
     speedField.addEventListener("change", onSpikesSettingsChange)

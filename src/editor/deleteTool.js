@@ -2,7 +2,7 @@ import { syncLevel } from "./level"
 
 export const deleteTool = () => {
     if (E.objectData !== undefined) {
-        if ((E.objectData.type === "wall" || E.objectData.type === "collider") && E.objectSubIndex >= 0) {
+        if ((E.objectData.type === "wall" || E.objectData.type === "collider" || E.objectData.type === "spikes") && E.objectSubIndex >= 0) {
             E.objectData.points.splice(E.objectSubIndex, 2)
             if (E.objectData.points.length > 0) {
                 if (E.objectSubIndex > 0) {
@@ -14,7 +14,7 @@ export const deleteTool = () => {
 
                     for (let i = 0; i < E.colliders.length; i++) {
                         if (E.colliders[i].reference === E.objectData) {
-                            colliders.splice(i, 1)
+                            E.colliders.splice(i, 1)
                             break
                         }
                     }

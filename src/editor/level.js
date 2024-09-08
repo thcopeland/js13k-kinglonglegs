@@ -1,12 +1,26 @@
+import { newSpikes } from "../spikes"
+
 export const exportLevel = () => {
     const wallData = E.walls
-        .sort((a, b) => a.points[0] - b.points[0])
-        .map(({ roughness, points }) => `        [ ${roughness},\t${points.join(", ")} ]`).join(",\n")
+        // .sort((a, b) => a.points[0] - b.points[0])
+        .map(({ roughness, points }) => `        [ ${roughness},\t${points.join(", ")} ]`)
+        .join(",\n")
     const colliderData = E.colliders
-        .sort((a, b) => a.points[0] - b.points[0])
-        .map(({ points }) => `        [ ${points.join(", ")} ]`).join(",\n")
+        // .sort((a, b) => a.points[0] - b.points[0])
+        .map(({ points }) => `        [ ${points.join(", ")} ]`)
+        .join(",\n")
+    const objectData = E.objects
+        .map((obj) => {
+            if (obj.type === "spikes") {
+                return `        newSpikes([${obj.points.join(", ")}], ${obj.reach}, ${obj.speed}, ${obj.delay})`
+            }
+        })
+        .join(",\n")
 
     const data = `{
+    objects: [
+${objectData}
+    }
     walls: [
 ${wallData}
     ],
@@ -43,6 +57,20 @@ export const importLevel = () => {
             }
         }
     }
+
+    E.objects = G.level.objects.map((obj) => {
+        if (obj.type_ === "spikes") {
+            return {
+                type: "spikes",
+                points: obj.vertices,
+                reach: obj.reach,
+                speed: obj.speed_,
+                delay: obj.delay
+            }
+        } else {
+            console.log(obj.type_ + " is unsupported")
+        }
+    }).filter(x => x !== undefined)
 }
 
 
@@ -57,10 +85,15 @@ export const syncLevel = () => {
 
     G.level.walls = E.walls.map((wall) => [ Math.round(wall.roughness), ...wall.points.map(Math.round) ])
         .filter(x => x.length > 2)
-        .sort((a, b) => a[1] - b[1])
+        // .sort((a, b) => a[1] - b[1])
     G.level.colliders = E.colliders.map((collider) => collider.points.map(Math.round))
         .filter(x => x.length > 3)
-        .sort((a, b) => a[0] - b[0])
+        // .sort((a, b) => a[0] - b[0])
+    G.level.objects = E.objects.map((obj) => {
+        if (obj.type === "spikes" && obj.points.length > 2) {
+            return newSpikes(obj.points, obj.reach, obj.speed, obj.delay)
+        }
+    }).filter(x => x !== undefined)
 }
 
 
