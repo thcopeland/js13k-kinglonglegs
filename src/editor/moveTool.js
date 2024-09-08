@@ -38,6 +38,9 @@ export const moveTool = () => {
                 }
             }
 
+        } else if (E.objectData.type === "words") {
+            E.objectData.x += dx
+            E.objectData.y += dy
         }
     }
 }

@@ -25,6 +25,11 @@ export const deleteTool = () => {
                 E.objectSubIndex = -1
                 E.objectIndex = -1
             }
+        } else if (E.objectData.type === "words") {
+            E.objects.splice(E.objects.indexOf(E.objectData), 1)
+            E.objectData = undefined
+            E.objectSubIndex = -1
+            E.objectIndex = -1
         }
     }
 

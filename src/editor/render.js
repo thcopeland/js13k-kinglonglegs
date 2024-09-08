@@ -40,6 +40,9 @@ export const drawEditor = () => {
                 ctx.arc(E.objectData.points[E.objectSubIndex], E.objectData.points[E.objectSubIndex + 1], 6, 0, 2*Math.PI)
                 ctx.stroke()
             }
+        } else if (E.objectData.type === "words") {
+            ctx.strokeStyle = "#0f0"
+            ctx.strokeRect(E.objectData.x - 40, E.objectData.y - 170, 80, 170)
         }
     }
 

@@ -90,6 +90,8 @@ const createButtons = (container) => {
     selectButton.onclick = () => E.tool = "select"
     container.appendChild(selectButton)
 
+    container.appendChild(document.createElement("p"))
+
     const addWallButton = document.createElement("button")
     addWallButton.innerText = "Add Wall"
     addWallButton.onclick = () => {
@@ -125,6 +127,8 @@ const createButtons = (container) => {
         E.objectData = undefined
     }
     container.appendChild(addSpikesButton)
+
+    container.appendChild(document.createElement("p"))
 
     const exportButton = document.createElement("button")
     exportButton.innerText = "Export"

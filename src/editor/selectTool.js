@@ -47,7 +47,6 @@ export const selectTool = () => {
             }
         }
 
-
         for (let i = 0; i < E.objects.length; i++) {
             const obj = E.objects[i]
             if (obj.type === "spikes") {
@@ -62,6 +61,18 @@ export const selectTool = () => {
                             selectIdx -= 1
                             anyPotentialSelections = true
                         }
+                    }
+                }
+            } else if (obj.type === "words") {
+                if (Math.abs(x - obj.x) < 40 && Math.abs(y - obj.y + 80) < 80) {
+                    E.objectData = obj
+                    E.objectIndex = i
+                    E.objectSubIndex = -1
+                    if (selectIdx === 1) {
+                        return
+                    } else {
+                        selectIdx -= 1
+                        anyPotentialSelections = true
                     }
                 }
             }

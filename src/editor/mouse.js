@@ -35,13 +35,6 @@ export const editorOnMouseMove = (evt) => {
 }
 
 
-const getCoords = (evt) => {
-    let worldX = Math.round(evt.offsetX + G.viewport_x)
-    let worldY = Math.round(evt.offsetY + G.viewport_y)
-    if (E.snap) {
-        worldX = Math.round(worldX / 16) * 16
-        worldY = Math.round(worldY / 16) * 16
-    }
-    return [ worldX, worldY ]
-}
+const getCoords = (evt) => 
+    [ Math.round(evt.offsetX + G.viewport_x), Math.round(evt.offsetY + G.viewport_y) ]
 

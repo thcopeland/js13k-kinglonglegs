@@ -1,18 +1,24 @@
+import { newWords } from "../comfort"
 import { newSpikes } from "../spikes"
+
+// TODO: does this actually improve file size?
+const reducePrecision = x => Math.round(x/10)*10
 
 export const exportLevel = () => {
     const wallData = E.walls
         // .sort((a, b) => a.points[0] - b.points[0])
-        .map(({ roughness, points }) => `        [ ${roughness},\t${points.join(", ")} ]`)
+        .map(({ roughness, points }) => `        [ ${roughness},\t${points.map(reducePrecision).join(", ")} ]`)
         .join(",\n")
     const colliderData = E.colliders
         // .sort((a, b) => a.points[0] - b.points[0])
-        .map(({ points }) => `        [ ${points.join(", ")} ]`)
+        .map(({ points }) => `        [ ${points.map(reducePrecision).join(", ")} ]`)
         .join(",\n")
     const objectData = E.objects
         .map((obj) => {
             if (obj.type === "spikes") {
-                return `        newSpikes([${obj.points.join(", ")}], ${obj.reach}, ${obj.speed}, ${obj.delay})`
+                return `        newSpikes([${obj.points.map(reducePrecision).join(", ")}], ${obj.reach}, ${obj.speed}, ${obj.delay})`
+            } else if (obj.type === "words") {
+                return `        newWords(${JSON.stringify(obj.text)}, ${obj.x}, ${obj.y})`
             }
         })
         .join(",\n")
@@ -20,7 +26,7 @@ export const exportLevel = () => {
     const data = `{
     objects: [
 ${objectData}
-    }
+    ],
     walls: [
 ${wallData}
     ],
@@ -67,6 +73,13 @@ export const importLevel = () => {
                 speed: obj.speed_,
                 delay: obj.delay
             }
+        } else if (obj.type_ === "words") { 
+            return {
+                type: "words",
+                text: obj.text,
+                x: obj.x,
+                y: obj.y
+            }
         } else {
             console.log(obj.type_ + " is unsupported")
         }
@@ -75,23 +88,19 @@ export const importLevel = () => {
 
 
 export const syncLevel = () => {
-    // G.level.objects = [
-    //     // newSpikes([0,500, 1000,500, 1200,600,   1200,700,   -10,700], 30),
-    //     // newSpikes([1300,600, 1500,600, 1500,700, 1300,700, 1300,600], 30, 0.003, 100),
-    //     // newWords("The path ahead is dark.\nTake courage.", 700, 205)
-    // ]
-    // G.level.npcs = []
     cleanUpLevel()
 
-    G.level.walls = E.walls.map((wall) => [ Math.round(wall.roughness), ...wall.points.map(Math.round) ])
+    G.level.walls = E.walls.map((wall) => [ Math.round(wall.roughness), ...wall.points.map(reducePrecision) ])
         .filter(x => x.length > 2)
         // .sort((a, b) => a[1] - b[1])
-    G.level.colliders = E.colliders.map((collider) => collider.points.map(Math.round))
+    G.level.colliders = E.colliders.map((collider) => collider.points.map(reducePrecision))
         .filter(x => x.length > 3)
         // .sort((a, b) => a[0] - b[0])
     G.level.objects = E.objects.map((obj) => {
         if (obj.type === "spikes" && obj.points.length > 2) {
             return newSpikes(obj.points, obj.reach, obj.speed, obj.delay)
+        } else if (obj.type === "words") {
+            return newWords(obj.text, obj.x, obj.y)
         }
     }).filter(x => x !== undefined)
 }

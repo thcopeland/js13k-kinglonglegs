@@ -8,6 +8,8 @@ export const addTool = () => {
         addCollider(x, y)
     } else if (E.objectType === "spikes") {
         addSpikes(x, y)
+    } else if (E.objectType === "words") {
+        addWords(x, y)
     }
 
     syncLevel()
@@ -107,4 +109,18 @@ const addSpikes = (x, y) => {
         E.objectSubIndex = E.objectData.points.length
         E.objectData.points.push(x, y)
     }
+}
+
+
+const addWords = (x, y) => {
+    E.objectData = {
+        type: "words",
+        x,
+        y,
+        text: E.config.wordsText
+    }
+    E.objectIndex = E.objects.length
+    E.objectSubIndex = -1
+    E.objects.push(E.objectData)
+    E.tool = "select"
 }
