@@ -241,8 +241,9 @@ const createConfig = (container) => {
         E.config.spikesReach = parseInt(reachField.value)
         E.config.spikesSpeed = parseFloat(speedField.value)
         E.config.spikesDelay = parseInt(delayField.value)
-        if (isNaN(E.config.spikesSpeed)) {
+        if (isNaN(E.config.spikesSpeed) || isNaN(E.config.spikesDelay)) {
             E.config.spikesSpeed = undefined
+            E.config.spikesDelay = undefined
         }
     }
     reachField.addEventListener("change", onSpikesSettingsChange)
