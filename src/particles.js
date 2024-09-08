@@ -1,5 +1,3 @@
-import { hypot } from "./utils"
-
 /*
  * variety  0 - basic, 1 - courage gained
  * life
@@ -82,7 +80,7 @@ export const updateParticles = (dt) => {
                 if (particle.variety === 1) {
                     let dx = particle.x - particle.varietyData[0]
                     let dy = particle.y - particle.varietyData[1]
-                    const len = hypot(dx, dy)
+                    const len = Math.hypot(dx, dy)
                     particle.vx -= dx / (len + 10) / 4
                     particle.vy -= dy / (len + 10) / 4
                 }

@@ -1,4 +1,4 @@
-import { xorshift, setStrokeAndFill, grayscale, hypot } from "./utils"
+import { xorshift, setStrokeAndFill, grayscale } from "./utils"
 import { getAnimation } from "./animation"
 import { WALKER_SKULL, WALKER_FIBULA, WALKER_FEMUR } from "./walker"
 import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK } from "./shapes"
@@ -89,7 +89,7 @@ export const drawLevel = () => {
                 const y = points[i+1]
                 const dx = points[i+2] - x
                 const dy = points[i+3] - y
-                const dist = hypot(dx, dy)
+                const dist = Math.hypot(dx, dy)
                 const nx = dy / dist
                 const ny = -dx / dist
                 for (let f = 0; f < dist; f += (rng % 16) + 16)

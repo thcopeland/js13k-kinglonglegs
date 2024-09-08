@@ -1,6 +1,5 @@
 import { newSpikes } from "./spikes"
 import { newWords } from "./comfort"
-import { hypot } from "./utils"
 
 export const loadLevel = (num) => {
     const level = LEVELS[num]
@@ -48,7 +47,7 @@ export const raycastTerrain = (x, y, vx, vy, radius) => {
         {
             let nx = collider[j+3] - collider[j+1]
             let ny = collider[j] - collider[j+2]
-            const l = hypot(nx, ny)
+            const l = Math.hypot(nx, ny)
             nx /= l
             ny /= l
             const nDotV = vx * nx + vy * ny

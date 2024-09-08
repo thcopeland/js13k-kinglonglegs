@@ -1,4 +1,4 @@
-import { xorshift, hypot } from "./utils"
+import { xorshift } from "./utils"
 
 export const newSpikes = (vertices, reach, speed_, delay) => {
     const positions = []
@@ -9,7 +9,7 @@ export const newSpikes = (vertices, reach, speed_, delay) => {
     for (let i = 0; i < vertices.length - 2; i += 2) {
         let dx = vertices[i+2] - vertices[i]
         let dy = vertices[i+3] - vertices[i+1]
-        const dist = hypot(dx, dy)
+        const dist = Math.hypot(dx, dy)
         dx /= dist
         dy /= dist
         for (let d = 0; d < dist; d += 10) {
@@ -25,7 +25,7 @@ export const newSpikes = (vertices, reach, speed_, delay) => {
             nx += (rng % 100) / 400
             rng = xorshift(rng)
             ny += (rng % 100) / 400
-            const l = hypot(nx, ny)
+            const l = Math.hypot(nx, ny)
             nx /= l
             ny /= l
             positions.push(vertices[i] + d * dx, vertices[i + 1] + d * dy, nx, ny)
@@ -53,9 +53,9 @@ export const updateSpikes = (obj, dt) => {
     }
     for (let i = 0; i < obj.positions.length; i += 4) {
         const dx = G.player.x - (obj.positions[i] + obj.reach * obj.extension[i/2] * obj.positions[i+2])
-        const dy = G.player.y - (obj.positions[i+1] + obj.reach * obj.extension[i/2] * obj.positions[i+3])
-        const dist = hypot(dx, dy)
-        const proj = (dx * obj.extension[i/2] + dy * obj.extension[i/2]) / dist
+        const dy = G.player.y + 40 - (obj.positions[i+1] + obj.reach * obj.extension[i/2] * obj.positions[i+3])
+        const dist = Math.hypot(dx, dy)
+        const proj = obj.reach * (dx * obj.extension[i/2] + dy * obj.extension[i/2]) / dist
         if (proj > 0.8 && dist < 50 && obj.extension[i/2] > 0.75) {
             G.pendingDamage ||= { cause: "spikes", push_x: obj.positions[i+2], push_y: obj.positions[i+3] }
         }
@@ -81,7 +81,7 @@ export const updateSpikes = (obj, dt) => {
                         obj.extension[i/2] = 1
                     }
                 }
-            } else if (dist < 30 ||
+            } else if (dist < 80 ||
                 (i < obj.positions.length - 4 && obj.extension[i/2 + 2] > 0.2 && obj.extension[i/2 + 3] > 0 && obj.extension[i/2 + 3] < 2000) ||
                 (i > 4 && obj.extension[i/2 - 2] > 0.2 && obj.extension[i/2 - 1] > 0 && obj.extension[i/2 - 1] < 2000)) { // retracted
                 // Extend if the player is nearby or a neighbor is extending.
