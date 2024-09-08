@@ -10,7 +10,14 @@ export const deleteTool = () => {
                 }
             } else {
                 if (E.objectData.type === "wall") {
-                    E.wals.splice(E.objectIndex, 1)
+                    E.walls.splice(E.objectIndex, 1)
+
+                    for (let i = 0; i < E.colliders.length; i++) {
+                        if (E.colliders[i].reference === E.objectData) {
+                            colliders.splice(i, 1)
+                            break
+                        }
+                    }
                 } else {
                     E.colliders.splice(E.objectIndex, 1)
                 }

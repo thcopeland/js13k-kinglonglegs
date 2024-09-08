@@ -22,6 +22,27 @@ ${colliderData}
 export const importLevel = () => {
     E.walls = G.level.walls.map((wall) => ({ type: "wall", roughness: wall[0], points: wall.slice(1) }))
     E.colliders = G.level.colliders.map(collider => ({ type: "collider", points: [...collider] }))
+
+    for (let i = 0; i < E.colliders.length; i++) {
+        const collider = E.colliders[i]
+        for (let j = 0; j < E.walls.length; j++) {
+            const wall = E.walls[j]
+            if (collider.points.length === wall.points.length) {
+                let match = true
+                for (let k = 0; k < collider.points.length; k++) {
+                    if (collider.points[k] !== wall.points[k]) {
+                        match = false
+                        break
+                    }
+                }
+
+                if (match) {
+                    collider.reference = wall
+                    break
+                }
+            }
+        }
+    }
 }
 
 
@@ -50,10 +71,15 @@ const cleanUpLevel = () => {
             points[points.length-1] = points[1]
         }
     })
-    E.colliders.forEach(({ points }) => {
-        if (points.length >= 4 && Math.hypot(points[0] - points[points.length-2], points[1] - points[points.length-1]) < 20) {
-            points[points.length-2] = points[0]
-            points[points.length-1] = points[1]
+    E.colliders.forEach((collider) => {
+        if (collider.reference !== undefined) {
+            collider.points = [...collider.reference.points]
+        } else {
+            const points = collider.points
+            if (points.length >= 4 && Math.hypot(points[0] - points[points.length-2], points[1] - points[points.length-1]) < 20) {
+                points[points.length-2] = points[0]
+                points[points.length-1] = points[1]
+            }
         }
     })
 }

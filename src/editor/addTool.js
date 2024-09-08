@@ -22,6 +22,14 @@ const addWall = (x, y) => {
         E.objectIndex = E.walls.length
         E.objectSubIndex = -1
         E.walls.push(E.objectData)
+
+        if (E.config.automaticColliders) {
+            E.colliders.push({
+                type: "collider",
+                points: [],
+                reference: E.objectData
+            })
+        }
     }
 
     if (E.objectData.points.length < 4) {
