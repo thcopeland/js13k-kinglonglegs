@@ -1,7 +1,7 @@
 export const drawEditor = () => {
     ctx.save()
     ctx.translate(-G.viewport_x, -G.viewport_y)
-    if (E.objectType === "wall" && E.objectData !== undefined && E.objectData.points.length > 0) {
+    if (E.objectData !== undefined && E.objectData.type === "wall"  && E.objectData.points.length > 0) {
         ctx.strokeStyle = "#ff0"
         ctx.beginPath()
         ctx.lineWidth = 1
@@ -16,7 +16,7 @@ export const drawEditor = () => {
             ctx.arc(E.objectData.points[E.objectSubIndex], E.objectData.points[E.objectSubIndex + 1], 6, 0, 2*Math.PI)
             ctx.stroke()
         }
-    } else if (E.objectType === "collider" && E.objectData !== undefined && E.objectData.points.length > 0) {
+    } else if (E.objectData !== undefined && E.objectData.type === "collider" && E.objectData.points.length > 0) {
         if (E.objectSubIndex >= 0) {
             ctx.beginPath()
             ctx.strokeStyle = "#ff0"

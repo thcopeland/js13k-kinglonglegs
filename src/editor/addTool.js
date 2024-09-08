@@ -13,8 +13,7 @@ export const addTool = () => {
 
 
 const addWall = (x, y) => {
-    if (!(E.objectType === "wall" && E.objectData !== undefined)) {
-        E.objectType = "wall"
+    if (E.objectData === undefined || E.objectData.type !== "wall") {
         E.objectData = {
             type: "wall",
             roughness: parseInt(prompt("Roughness?", "10")),
@@ -41,8 +40,7 @@ const addWall = (x, y) => {
 
 
 const addCollider = (x, y) => {
-    if (!(E.objectType === "collider" && E.objectData !== undefined)) {
-        E.objectType = "collider"
+    if (E.objectData === undefined || E.objectData.type !== "collider") {
         E.objectData = {
             type: "collider",
             points: []

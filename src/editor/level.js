@@ -28,6 +28,24 @@ export const syncLevel = () => {
     //     // newWords("The path ahead is dark.\nTake courage.", 700, 205)
     // ]
     // G.level.npcs = []
-    G.level.walls = E.walls.map((wall) => [ wall.roughness, ...wall.points ])
-    G.level.colliders = E.colliders.map((collider) => [0, ...collider.points]).filter(x => x.length > 1)
+    cleanUpLevel()
+
+    G.level.walls = E.walls.map((wall) => [ wall.roughness, ...wall.points ]).filter(x => x.length > 2)
+    G.level.colliders = E.colliders.map((collider) => [0, ...collider.points]).filter(x => x.length > 3)
+}
+
+
+const cleanUpLevel = () => {
+    E.walls.forEach(({ points }) => {
+        if (points.length >= 4 && Math.hypot(points[0] - points[points.length-2], points[1] - points[points.length-1]) < 20) {
+            points[points.length-2] = points[0]
+            points[points.length-1] = points[1]
+        }
+    })
+    E.colliders.forEach(({ points }) => {
+        if (points.length >= 4 && Math.hypot(points[0] - points[points.length-2], points[1] - points[points.length-1]) < 20) {
+            points[points.length-2] = points[0]
+            points[points.length-1] = points[1]
+        }
+    })
 }

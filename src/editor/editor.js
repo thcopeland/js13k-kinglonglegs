@@ -1,5 +1,6 @@
 import { importLevel, exportLevel } from "./level"
 import { editorOnMouseDown, editorOnMouseUp, editorOnMouseMove } from "./mouse"
+import { deleteTool } from "./deleteTool"
 import { drawEditor } from "./render"
 
 export const initEditor = () => {
@@ -15,7 +16,9 @@ export const initEditor = () => {
         enabled: false,
         snap: false,
         mouse: {
+            down: false,
             currentXY: [0, 0],
+            clickXY: [0, 0],
             lastXY: [0, 0]
         },
         draw: drawEditor
@@ -85,6 +88,9 @@ export const initEditor = () => {
         else if (evt.key === "Escape") {
             E.tool = "select"
             E.objectData = undefined
+            importLevel() // Undo any in progress operations
+        } else if (evt.key === "Delete") {
+            deleteTool()
         }
     })
 
