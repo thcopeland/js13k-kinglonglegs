@@ -17,7 +17,7 @@ ${colliderData}
 
 export const importLevel = () => {
     E.walls = G.level.walls.map((wall) => ({ type: "wall", roughness: wall[0], points: wall.slice(1) }))
-    E.colliders = G.level.colliders.map(collider => ({ type: "collider", points: collider.slice(1) }))
+    E.colliders = G.level.colliders.map(collider => ({ type: "collider", points: [...collider] }))
 }
 
 
@@ -31,7 +31,7 @@ export const syncLevel = () => {
     cleanUpLevel()
 
     G.level.walls = E.walls.map((wall) => [ wall.roughness, ...wall.points ]).filter(x => x.length > 2)
-    G.level.colliders = E.colliders.map((collider) => [0, ...collider.points]).filter(x => x.length > 3)
+    G.level.colliders = E.colliders.map((collider) => [...collider.points]).filter(x => x.length > 3)
 }
 
 

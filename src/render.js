@@ -110,8 +110,8 @@ export const drawLevel = () => {
         ctx.lineWidth = 1
         G.level.colliders.forEach(collider => {
             ctx.beginPath()
-            ctx.moveTo(collider[1], collider[2])
-            for (let i = 3; i < collider.length; i += 2) {
+            ctx.moveTo(collider[0], collider[1])
+            for (let i = 2; i < collider.length; i += 2) {
                 ctx.lineTo(collider[i], collider[i+1])
             }
             ctx.stroke()

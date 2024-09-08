@@ -20,7 +20,7 @@ export const raycastTerrain = (x, y, vx, vy, radius) => {
         const collider = G.level.colliders[i]
 
         // Perform swept sphere vs vertex checks.
-        for (let j = 1; j < collider.length; j += 2)
+        for (let j = 0; j < collider.length; j += 2)
         {
             const qx = x - collider[j]
             const qy = y - collider[j+1]
@@ -44,7 +44,7 @@ export const raycastTerrain = (x, y, vx, vy, radius) => {
         }
 
         // Perform swept sphere vs line segment checks.
-        for (let j = 1; j < collider.length-2; j += 2)
+        for (let j = 0; j < collider.length-2; j += 2)
         {
             let nx = collider[j+3] - collider[j+1]
             let ny = collider[j] - collider[j+2]
@@ -140,9 +140,9 @@ const LEVELS = [
             [ 30,   300, 300, 700,200, 800,200, 700,300, 300,300 ]
         ],
         colliders: [
-            [ 0,    0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
-            [ 0,    1300,600, 1500,600, 1500,700, 1300,700, 1300,600 ],
-            [ 0,    300, 300, 700,200, 800,200, 700,300, 300,300 ]
+            [ 0,500, 1000,500, 1200,600,   1200,700,   -10,700 ],
+            [ 1300,600, 1500,600, 1500,700, 1300,700, 1300,600 ],
+            [ 300, 300, 700,200, 800,200, 700,300, 300,300 ]
         ]
     }
 ]
