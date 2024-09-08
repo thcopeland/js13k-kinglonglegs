@@ -6,17 +6,23 @@ import { syncLevel } from "./level"
 export const editorOnMouseUp = (evt) => {
     syncLevel()
     E.mouse.down = false
-}
-
-
-export const editorOnMouseDown = (evt) => {
-    E.mouse.clickXY = getCoords(evt)
-    E.mouse.down = true
     if (E.tool === "add") {
         addTool()
     } else if (E.tool === "select") {
         selectTool()
     }
+}
+
+
+export const editorOnMouseDown = (evt) => {
+    const xy = getCoords(evt)
+    if (Math.hypot(E.mouse.clickXY[0] - xy[0], E.mouse.clickXY[1] - xy[1]) < 10) {
+        E.mouse.clickCount++
+    } else {
+        E.mouse.clickCount = 1
+    }
+    E.mouse.clickXY = xy
+    E.mouse.down = true
 }
 
 

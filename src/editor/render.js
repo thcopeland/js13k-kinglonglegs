@@ -20,13 +20,13 @@ export const drawEditor = () => {
         } else if (E.objectData.type === "collider" && E.objectData.points.length > 0) {
             if (E.objectSubIndex >= 0) {
                 ctx.beginPath()
-                ctx.strokeStyle = "#ff0"
+                ctx.strokeStyle = "#f00"
                 ctx.lineWidth = 2
                 ctx.arc(E.objectData.points[E.objectSubIndex], E.objectData.points[E.objectSubIndex + 1], 6, 0, 2*Math.PI)
                 ctx.stroke()
             }
         } else if (E.objectData.type === "spikes" && E.objectData.points.length > 0) {
-            ctx.strokeStyle = "#ff0"
+            ctx.strokeStyle = "#0ff"
             ctx.beginPath()
             ctx.lineWidth = 1
             ctx.moveTo(E.objectData.points[0], E.objectData.points[1])

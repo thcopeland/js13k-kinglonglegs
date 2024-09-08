@@ -19,7 +19,8 @@ export const initEditor = () => {
             down: false,
             currentXY: [0, 0],
             clickXY: [0, 0],
-            lastXY: [0, 0]
+            lastXY: [0, 0],
+            clickCount: 0
         },
         config: {
             automaticColliders: true,
