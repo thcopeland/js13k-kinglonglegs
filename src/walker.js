@@ -29,7 +29,6 @@ export const newWalker = (id_, x, y, legNum) => {
         vx: 0,
         vy: 0,
         facing_: 1,
-        state: 1, // Idle, Running, Jumping, Falling, Collapsing
         legs,
         isGrounded: false
     }
@@ -37,32 +36,24 @@ export const newWalker = (id_, x, y, legNum) => {
 
 export const updateWalker = (walker, dt) => {
     const ground = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, 0, 1, 30)
-    walker.isGrounded = ground.t < 2*dt + 2
+    const ceiling = raycastTerrain(walker.x, walker.y, 0, -1 - Math.abs(walker.vy), WALKER_SKULL)
+    walker.isGrounded = Math.abs(ground.normal_y) > 0.6 && ground.t < 2*dt + 2
 
     updateLegs(walker, dt)
 
-    if (walker.state === 0) {
-
-    } else if (walker.state === 1) {
-        if (walker.isGrounded && walker.vy > -1)
-        {
-            walker.y = ground.contact_y + 0.01 * ground.normal_y * dt - LEG_OFFSET
-            walker.vy = 0
-        } else {
-            walker.state = 3
-        }
-    } else if (walker.state === 3) {
-        if (walker.isGrounded) {
-            walker.state = 1
-            walker.vy = 0
-        } else {
-            walker.vy += 0.01 * dt
-        }
+    if (walker.isGrounded && walker.vy > -1 && ceiling.t > dt + 1) {
+        walker.y = ground.contact_y + 0.01 * ground.normal_y * dt - LEG_OFFSET
+        walker.vy = 0
+    } else {
+        walker.vy += 0.01 * dt
     }
 
     let movementTime = dt
-    for (let i = 0; i < 3; i++) {
-        const collision = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, walker.vx, walker.vy, 30)
+    for (let i = 0; i < 3 && movementTime > 1e-3; i++) {
+        const feetCollision = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, walker.vx, walker.vy, 30)
+        const headCollision = raycastTerrain(walker.x, walker.y, walker.vx, walker.vy, WALKER_SKULL)
+        const collision = feetCollision.t < headCollision.t ? feetCollision : headCollision
+
         if (collision.t <= movementTime) {
             const effective_t = Math.max(0, collision.t - 0.001)
             walker.x += walker.vx * effective_t
