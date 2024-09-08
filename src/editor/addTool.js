@@ -16,7 +16,7 @@ const addWall = (x, y) => {
     if (E.objectData === undefined || E.objectData.type !== "wall") {
         E.objectData = {
             type: "wall",
-            roughness: parseInt(prompt("Roughness?", "10")),
+            roughness: E.config.wallRoughness,
             points: []
         }
         E.objectIndex = E.walls.length

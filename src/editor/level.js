@@ -1,6 +1,10 @@
 export const exportLevel = () => {
-    const wallData = E.walls.map(({ roughness, points }) => `        [ ${roughness},\t${points.join(", ")} ]`).join(",\n")
-    const colliderData = E.colliders.map(({ points }) => `        [ 0,\t${points.join(", ")} ]`).join(",\n")
+    const wallData = E.walls
+        .sort((a, b) => a.points[0] - b.points[0])
+        .map(({ roughness, points }) => `        [ ${roughness},\t${points.join(", ")} ]`).join(",\n")
+    const colliderData = E.colliders
+        .sort((a, b) => a.points[0] - b.points[0])
+        .map(({ points }) => `        [ ${points.join(", ")} ]`).join(",\n")
 
     const data = `{
     walls: [
@@ -10,8 +14,8 @@ ${wallData}
 ${colliderData}
     ]
 }`
-    console.log(data)
     navigator.clipboard.writeText(data)
+    console.log(data)
 }
 
 
@@ -30,8 +34,12 @@ export const syncLevel = () => {
     // G.level.npcs = []
     cleanUpLevel()
 
-    G.level.walls = E.walls.map((wall) => [ wall.roughness, ...wall.points ]).filter(x => x.length > 2)
-    G.level.colliders = E.colliders.map((collider) => [...collider.points]).filter(x => x.length > 3)
+    G.level.walls = E.walls.map((wall) => [ Math.round(wall.roughness), ...wall.points.map(Math.round) ])
+        .filter(x => x.length > 2)
+        .sort((a, b) => a[1] - b[1])
+    G.level.colliders = E.colliders.map((collider) => collider.points.map(Math.round))
+        .filter(x => x.length > 3)
+        .sort((a, b) => a[0] - b[0])
 }
 
 

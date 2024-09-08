@@ -35,7 +35,7 @@ export const updateWords = (obj, dt) => {
             obj.lastParticleTime = 0
         }
 
-        if (Math.abs(G.player.x - obj.x) < 30 && Math.abs(G.player.y - obj.y) < 100) {
+        if (Math.abs(G.player.x - obj.x) < 40 && Math.abs(G.player.y - obj.y + 100) < 100) {
             zzfx(...[1.2,,268,.02,.19,.32,,3.6,,,305,.07,.03,,,,.16,.79,.13,,-1388])
             obj.t = 0.001
             incrementCourage(true, obj.x, obj.y - 170)
