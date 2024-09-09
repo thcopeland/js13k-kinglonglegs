@@ -1,7 +1,7 @@
 import { xorshift, setStrokeAndFill, grayscale } from "./utils"
 import { getAnimation } from "./animation"
 import { WALKER_SKULL, WALKER_FIBULA, WALKER_FEMUR } from "./walker"
-import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK } from "./shapes"
+import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK, LAMPPOST } from "./shapes"
 
 export const drawText = (x, y, text) => {
     const lines = text.split("\n")
@@ -23,17 +23,18 @@ export const drawWalker = (walker) => {
     setStrokeAndFill(3, 9, 2)
     for (let i = 0; i < walker.legs.length; i++) {
         const leg = walker.legs[i]
+        const direction = walker.legs > 2 ? (i < walker.legs.length / 2 ? -1 : 1) : walker.facing_
         // Solve the two-segment inverse kinematics problem. Something like
         // FABRIK is pretty simple but trigonometry is sufficient.
         const c = Math.hypot(leg[0] - leg[2], leg[1] - leg[3])
         // Use the Law of Cosines to find the angle between the femur and fibula.
         const theta = Math.acos((WALKER_FIBULA*WALKER_FIBULA + WALKER_FEMUR*WALKER_FEMUR - c*c) / (2 * WALKER_FEMUR * WALKER_FIBULA)) || Math.PI
         // Use the Law of Sines to find the angle between the long edge and the femur.
-        const phi = (Math.PI - theta - (Math.asin(WALKER_FEMUR * Math.sin(theta) / c) || 0)) * walker.facing_
+        const phi = (Math.PI - theta - (Math.asin(WALKER_FEMUR * Math.sin(theta) / c) || 0)) * direction
         // Calculate the angle between the horizontal and the femur.
         const alpha = Math.PI/2 - phi - Math.asin((leg[2] - leg[0]) / c)
         // Calculate the angle between the horizontal and the fibula.
-        const beta = alpha + (Math.PI - theta) * walker.facing_
+        const beta = alpha + (Math.PI - theta) * direction
         ctx.beginPath()
         ctx.moveTo(leg[0], leg[1])
         ctx.lineTo(leg[0] + WALKER_FEMUR * Math.cos(alpha), leg[1] + WALKER_FEMUR * Math.sin(alpha))
@@ -201,8 +202,29 @@ export const drawGameObjects = () => {
                 }
             }
         } else if (object.type_ === "words") {
-            drawShape(WORDS_OF_COMFORT_BOOK, object.x, object.y - 157 + 15 * Math.pow(object.t / 500, 3))
-            drawShape(WORDS_OF_COMFORT_PEDESTAL, object.x, object.y)
+            ctx.save()
+            ctx.translate(object.x, object.y)
+            ctx.rotate(object.r)
+            drawShape(WORDS_OF_COMFORT_BOOK, 0, -157 + 15 * Math.pow(object.t / 500, 3))
+            drawShape(WORDS_OF_COMFORT_PEDESTAL, 0, 0)
+            ctx.restore()
+        } else if (object.type_ === "lamp") {
+            ctx.save()
+            ctx.translate(object.x, object.y)
+            ctx.scale(object.s, 1)
+            ctx.rotate(object.r)
+            ctx.lineWidth = 2
+            ctx.fillStyle = "rgba(255,255,255," + (object.t / 2000) + ")"
+            ctx.strokeStyle = "rgba(255,255,255," + (object.t / 1000) + ")"
+            ctx.shadowBlur = Math.round(object.t / 1000 * 10)
+            ctx.shadowColor = "#fff"
+            ctx.beginPath()
+            ctx.arc(-100, -220, 30, 0, 2*Math.PI)
+            ctx.fill()
+            ctx.stroke()
+            ctx.shadowBlur = 0
+            drawShape(LAMPPOST, 0, 0)
+            ctx.restore()
         } else {
             if (IS_DEVELOPMENT_BUILD) {
                 ctx.restore()
@@ -212,7 +234,6 @@ export const drawGameObjects = () => {
     }
     ctx.restore()
 }
-
 
 export const drawShape = (shape, x, y) => {
     ctx.beginPath()

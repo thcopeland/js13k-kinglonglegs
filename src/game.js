@@ -3,6 +3,7 @@ import { newParticle, addParticle, updateParticles } from "./particles"
 import { loadLevel, raycastTerrain } from "./level"
 import { updateSpikes } from "./spikes"
 import { updateWords } from "./comfort"
+import { updateLamppost } from "./lamppost"
 import { updateMessages } from "./message"
 import { updateStats, incrementCourage, decrementCourage, drawStats } from "./stats"
 import { adjustViewport } from "./viewport"
@@ -158,6 +159,8 @@ const updateGameObjects = (dt) => {
             updateSpikes(obj, dt)
         } else if (obj.type_ === "words") {
             updateWords(obj, dt)
+        } else if (obj.type_ === "lamp") {
+            updateLamppost(obj, dt)  
         } else {
             if (IS_DEVELOPMENT_BUILD) {
                 throw new Error("Invalid game object "  + JSON.stringify(obj))

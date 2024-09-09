@@ -13,7 +13,7 @@ const LEG_LOWERING = 2
 
 export const newWalker = (id_, x, y, legNum) => {
     const legs = []
-    // legNum = 10
+    // legNum = 4
     for (let i = 0; i < legNum; i++) {
         const l = i / (legNum - 1)
         // const l = 0
@@ -112,7 +112,7 @@ const updateLegs = (walker, dt) => {
         if (leg[6] === LEG_PLANTED) {
             leg[2] = leg[4] - walker.x
             leg[3] = leg[5] - walker.y
-            if (walker.legs.filter(leg => leg[6] !== 0).length < walker.legs.length / 3 &&
+            if (walker.legs.every(leg => leg[6] === LEG_PLANTED) &&
                 Math.hypot(leg[2] - leg[0], leg[3] - leg[1]) > LEG_LENGTH)
                 leg[6] = LEG_LIFTING
         } else if (leg[6] === LEG_LIFTING) {

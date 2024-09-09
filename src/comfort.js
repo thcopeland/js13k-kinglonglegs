@@ -3,12 +3,13 @@ import { addParticle, newParticle } from "./particles"
 import { incrementCourage } from "./stats"
 import { zzfx } from "./zzfx"
 
-export const newWords = (text, x, y) => {
+export const newWords = (text, x, y, r) => {
     return {
         type_: "words",
         text: text,
         x: x,
         y: y,
+        r: r,
         t: 0,
         lastParticleTime: 0
     }
