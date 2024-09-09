@@ -132,7 +132,7 @@ const LEVELS = [
             newSpikes([0, 500, 1000, 500, 1200, 600, 1200, 700, -10, 700], 30, undefined, undefined),
             newSpikes([1300, 600, 1500, 600, 1500, 700, 1300, 700, 1300, 600], 30, 0.003, 100),
             newWords("The path ahead is dark.\nTake courage.", 700, 205, -0.05),
-            newLamppost(1350, 600, -1, -0.1)
+            newLamppost(1350, 600, false, -1, -0.1)
         ],
         walls: [
             [ 10,	0, 500, 1000, 500, 1200, 600, 1200, 700, -10, 700 ],

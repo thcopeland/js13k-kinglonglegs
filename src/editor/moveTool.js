@@ -38,7 +38,7 @@ export const moveTool = () => {
                 }
             }
 
-        } else if (E.objectData.type === "words") {
+        } else if (E.objectData.type === "words" || E.objectData.type === "lamp") {
             E.objectData.x += dx
             E.objectData.y += dy
         }

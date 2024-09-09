@@ -10,6 +10,8 @@ export const addTool = () => {
         addSpikes(x, y)
     } else if (E.objectType === "words") {
         addWords(x, y)
+    } else if (E.objectType === "lamp") {
+        addLamppost(x, y)
     }
 
     syncLevel()
@@ -119,6 +121,22 @@ const addWords = (x, y) => {
         y,
         text: E.config.wordsText,
         rotation: E.config.wordsRotation
+    }
+    E.objectIndex = E.objects.length
+    E.objectSubIndex = -1
+    E.objects.push(E.objectData)
+    E.tool = "select"
+}
+
+
+const addLamppost = (x, y) => {
+    E.objectData = {
+        type: "lamp",
+        x,
+        y,
+        isFlipped: E.config.lamppostIsFlipped,
+        isPrelit: E.config.lamppostIsPrelit,
+        rotation: E.config.lamppostRotation
     }
     E.objectIndex = E.objects.length
     E.objectSubIndex = -1

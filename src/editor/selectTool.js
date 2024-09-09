@@ -75,6 +75,18 @@ export const selectTool = () => {
                         anyPotentialSelections = true
                     }
                 }
+            } else if (obj.type === "lamp") {
+                if (Math.abs(x - obj.x + 25*(obj.isFlipped ? -1 : 1)) < 60 && Math.abs(y - obj.y + 150) < 150) {
+                    E.objectData = obj
+                    E.objectIndex = i
+                    E.objectSubIndex = -1
+                    if (selectIdx === 1) {
+                        return
+                    } else {
+                        selectIdx -= 1
+                        anyPotentialSelections = true
+                    }
+                }
             }
         }
     }

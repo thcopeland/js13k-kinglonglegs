@@ -1,4 +1,5 @@
 import { newWords } from "../comfort"
+import { newLamppost } from "../lamppost"
 import { newSpikes } from "../spikes"
 
 // TODO: does this actually improve file size?
@@ -19,6 +20,8 @@ export const exportLevel = () => {
                 return `        newSpikes([${obj.points.map(reducePrecision).join(", ")}], ${obj.reach}, ${obj.speed}, ${obj.delay})`
             } else if (obj.type === "words") {
                 return `        newWords(${JSON.stringify(obj.text)}, ${obj.x}, ${obj.y}, ${obj.rotation})`
+            } else if (obj.type === "lamp") {
+                return `        newLamppost(${obj.x}, ${obj.y}, ${obj.isPrelit}, ${obj.isFlipped ? -1 : 1}, ${obj.rotation})`
             }
         })
         .join(",\n")
@@ -81,6 +84,15 @@ export const importLevel = () => {
                 y: obj.y,
                 rotation: obj.r
             }
+        } else if (obj.type_ === "lamp") {
+            return {
+                type: "lamp",
+                x: obj.x,
+                y: obj.y,
+                isPrelit: obj.prelit,
+                isFlipped: obj.s < 0,
+                rotation: obj.r
+            }
         } else {
             console.log(obj.type_ + " is unsupported")
         }
@@ -102,6 +114,10 @@ export const syncLevel = () => {
             return newSpikes(obj.points, obj.reach, obj.speed, obj.delay)
         } else if (obj.type === "words") {
             return newWords(obj.text, obj.x, obj.y, obj.rotation)
+        } else if (obj.type === "lamp") {
+            return newLamppost(obj.x, obj.y, obj.isPrelit, obj.isFlipped ? -1 : 1, obj.rotation)
+        } else {
+            console.log(obj.type + " is unsupported")
         }
     }).filter(x => x !== undefined)
 }

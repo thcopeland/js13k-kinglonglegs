@@ -29,7 +29,10 @@ export const initEditor = () => {
             wordsRotation: 0,
             spikesReach: 30,
             spikesSpeed: 0.003,
-            spikesDelay: 10
+            spikesDelay: 10,
+            lamppostIsFlipped: false,
+            lamppostIsPrelit: false,
+            lamppostRotation: 0
         },
         draw: drawEditor
     }
@@ -52,8 +55,9 @@ export const initEditor = () => {
     <ul><li><b>Select</b> allows you to choose a specific element for modification or deletion.</li> \
     <li>Click <b>Add Wall</b> to add new walls to the level. Check <b>Automatic colliders</b> to automatically generate colliders for the wall. The <b>Roughness</b> field controls the roughness.</li>\
     <li>Click <b>Add Collider</b> to add new colliders to the level.</li>\
-    <li>Click <b>Add Words</b> to add new words of comfort to the level. Type the desired text into the <b>Words</b> text area.</li>\
+    <li>Click <b>Add Words</b> to add new words of comfort to the level. Type the desired text into the <b>Words</b> text area. Change <b>Rotation</b> to adjust its rendering orientation.</li>\
     <li>Click <b>Add Spikes</b> to add spikes to the level. The spikes' <b>Speed</b>, <b>Delay</b> and <b>Reach</b> can be set below.</li>\
+    <li>Click <b>Add Lamppost</b> to a lamppost to the level. Its <b>Flipped</b> status and rendering <b>Rotation</b> and <b>Reach</b> can be set below.</li>\
     <li>Click and drag to move the selected element.</li>\
     <li>Press the <b>Delete</b> button on the keyboard to delete the selected element.</li>\
     <li>To save your changes, click the <b>Export</b> button. This doesn't actually save the level, but it prints it the browser console and copies it to your clipboard. You can then transfer it to the source code at your convenience.</li></ul>"
@@ -128,6 +132,15 @@ const createButtons = (container) => {
         E.objectData = undefined
     }
     container.appendChild(addSpikesButton)
+
+    const addLamppostButton = document.createElement("button")
+    addLamppostButton.innerText = "Add Lamppost"
+    addLamppostButton.onclick = () => {
+        E.tool = "add"
+        E.objectType = "lamp"
+        E.objectData = undefined
+    }
+    container.appendChild(addLamppostButton)
 
     container.appendChild(document.createElement("p"))
 
@@ -227,6 +240,43 @@ const createConfig = (container) => {
 
     configContainer.appendChild(document.createElement("hr"))
 
+    const lampHeader = document.createElement("h2")
+    lampHeader.innerText = "Lamppost settings"
+    configContainer.appendChild(lampHeader)
+
+    const lampFlippedLabel = document.createElement("label")
+    lampFlippedLabel.innerText = "Flipped "
+    configContainer.appendChild(lampFlippedLabel)
+
+    const lampFlippedCheckbox = document.createElement("input")
+    lampFlippedCheckbox.type = "checkbox"
+    lampFlippedCheckbox.value = E.config.lamppostIsFlipped
+    lampFlippedLabel.appendChild(lampFlippedCheckbox)
+
+    configContainer.appendChild(document.createElement("br"))
+
+    const lampPrelitLabel = document.createElement("label")
+    lampPrelitLabel.innerText = "Prelit "
+    configContainer.appendChild(lampPrelitLabel)
+
+    const lampPrelitCheckbox = document.createElement("input")
+    lampPrelitCheckbox.type = "checkbox"
+    lampPrelitCheckbox.value = E.config.lamppostIsPrelit
+    lampPrelitLabel.appendChild(lampPrelitCheckbox)
+
+    configContainer.appendChild(document.createElement("br"))
+
+    const lampRotationLabel = document.createElement("label")
+    lampRotationLabel.innerText = "Rotation (rad) "
+    configContainer.appendChild(lampRotationLabel)
+
+    const lampRotationField = document.createElement("input")
+    lampRotationField.type = "number"
+    lampRotationField.value = E.config.lamppostRotation
+    lampRotationLabel.appendChild(lampRotationField)
+
+    configContainer.appendChild(document.createElement("hr"))
+
     const getSelectedSettingsButton = document.createElement("button")
     getSelectedSettingsButton.innerText = "Get Selection Settings"
     configContainer.appendChild(getSelectedSettingsButton)
@@ -262,6 +312,15 @@ const createConfig = (container) => {
     speedField.addEventListener("change", onSpikesSettingsChange)
     delayField.addEventListener("change", onSpikesSettingsChange)
 
+    const onLamppostSettingsChange = (evt) => {
+        E.config.lamppostIsFlipped = lampFlippedCheckbox.checked
+        E.config.lamppostIsPrelit = lampPrelitCheckbox.checked
+        E.config.lamppostRotation = parseFloat(lampRotationField.value)
+    }
+    lampFlippedCheckbox.addEventListener("change", onLamppostSettingsChange)
+    lampPrelitCheckbox.addEventListener("change", onLamppostSettingsChange)
+    lampRotationField.addEventListener("change", onLamppostSettingsChange)
+
     getSelectedSettingsButton.addEventListener("click", (evt) => {
         if (E.objectData !== undefined) {
             if (E.objectData.type === "wall") {
@@ -276,6 +335,11 @@ const createConfig = (container) => {
                 speedField.value = E.objectData.speed
                 delayField.value = E.objectData.delay
                 onSpikesSettingsChange()
+            }  else if (E.objectData.type === "lamp") {
+                lampFlippedCheckbox.checked = E.objectData.isFlipped
+                lampPrelitCheckbox.checked = E.objectData.isPrelit
+                lampRotationField.value = E.objectData.rotation
+                onLamppostSettingsChange()
             }
         }
     })
@@ -291,6 +355,10 @@ const createConfig = (container) => {
                 E.objectData.reach = E.config.spikesReach
                 E.objectData.speed = E.config.spikesSpeed
                 E.objectData.delay = E.config.spikesDelay
+            } else if (E.objectData.type === "lamp") {
+                E.objectData.isFlipped = E.config.lamppostIsFlipped
+                E.objectData.isPrelit = E.config.lamppostIsPrelit
+                E.objectData.rotation = E.config.lamppostRotation
             }
             syncLevel()
         }

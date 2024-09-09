@@ -43,6 +43,9 @@ export const drawEditor = () => {
         } else if (E.objectData.type === "words") {
             ctx.strokeStyle = "#0f0"
             ctx.strokeRect(E.objectData.x - 40, E.objectData.y - 170, 80, 170)
+        } else if (E.objectData.type === "lamp") {
+            ctx.strokeStyle = "#0f0"
+            ctx.strokeRect(E.objectData.x - 40 - 100*(E.objectData.isFlipped ? -1 : 1), E.objectData.y - 200, 80, 200)
         }
     }
 
