@@ -26,6 +26,7 @@ export const initEditor = () => {
             automaticColliders: true,
             wallRoughness: 30,
             wordsText: "",
+            wordsRotation: 0,
             spikesReach: 30,
             spikesSpeed: 0.003,
             spikesDelay: 10
@@ -178,6 +179,15 @@ const createConfig = (container) => {
     wordsField.value = E.config.wordsText
     configContainer.appendChild(wordsField)
 
+    const wordsRotationLabel = document.createElement("label")
+    wordsRotationLabel.innerText = "Rotation (rad) "
+    configContainer.appendChild(wordsRotationLabel)
+
+    const wordsRotationField = document.createElement("input")
+    wordsRotationField.type = "number"
+    wordsRotationField.value = E.config.wordsRotation
+    wordsRotationLabel.appendChild(wordsRotationField)
+
     configContainer.appendChild(document.createElement("hr"))
 
     const spikesHeader = document.createElement("h2")
@@ -234,8 +244,10 @@ const createConfig = (container) => {
 
     const onWordsSettingsChange = (evt) => {
         E.config.wordsText = wordsField.value
+        E.config.wordsRotation = parseFloat(wordsRotationField.value)
     }
     wordsField.addEventListener("change", onWordsSettingsChange)
+    wordsRotationField.addEventListener("change", onWordsSettingsChange)
 
     const onSpikesSettingsChange = (evt) => {
         E.config.spikesReach = parseInt(reachField.value)
@@ -257,6 +269,7 @@ const createConfig = (container) => {
                 onWallSettingsChange()
             } else if (E.objectData.type === "words") {
                 wordsField.value = E.objectData.text
+                wordsRotationField.value = E.objectData.rotation
                 onWordsSettingsChange()
             } else if (E.objectData.type === "spikes") {
                 reachField.value = E.objectData.reach
@@ -273,6 +286,7 @@ const createConfig = (container) => {
                 E.objectData.roughness = E.config.wallRoughness
             } else if (E.objectData.type === "words") {
                 E.objectData.text = E.config.wordsText
+                E.objectData.rotation = E.config.wordsRotation
             } else if (E.objectData.type === "spikes") {
                 E.objectData.reach = E.config.spikesReach
                 E.objectData.speed = E.config.spikesSpeed

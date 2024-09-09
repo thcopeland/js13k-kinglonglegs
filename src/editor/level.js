@@ -18,7 +18,7 @@ export const exportLevel = () => {
             if (obj.type === "spikes") {
                 return `        newSpikes([${obj.points.map(reducePrecision).join(", ")}], ${obj.reach}, ${obj.speed}, ${obj.delay})`
             } else if (obj.type === "words") {
-                return `        newWords(${JSON.stringify(obj.text)}, ${obj.x}, ${obj.y})`
+                return `        newWords(${JSON.stringify(obj.text)}, ${obj.x}, ${obj.y}, ${obj.rotation})`
             }
         })
         .join(",\n")
@@ -78,7 +78,8 @@ export const importLevel = () => {
                 type: "words",
                 text: obj.text,
                 x: obj.x,
-                y: obj.y
+                y: obj.y,
+                rotation: obj.r
             }
         } else {
             console.log(obj.type_ + " is unsupported")
@@ -100,7 +101,7 @@ export const syncLevel = () => {
         if (obj.type === "spikes" && obj.points.length > 2) {
             return newSpikes(obj.points, obj.reach, obj.speed, obj.delay)
         } else if (obj.type === "words") {
-            return newWords(obj.text, obj.x, obj.y)
+            return newWords(obj.text, obj.x, obj.y, obj.rotation)
         }
     }).filter(x => x !== undefined)
 }

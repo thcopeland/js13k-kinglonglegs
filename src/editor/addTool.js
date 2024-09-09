@@ -117,7 +117,8 @@ const addWords = (x, y) => {
         type: "words",
         x,
         y,
-        text: E.config.wordsText
+        text: E.config.wordsText,
+        rotation: E.config.wordsRotation
     }
     E.objectIndex = E.objects.length
     E.objectSubIndex = -1
