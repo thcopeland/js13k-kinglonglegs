@@ -1,11 +1,13 @@
 import { decrementCourage } from "./stats"
 import { updateWalker } from "./walker"
+import { loadLevel } from "./level"
 import { zzfx } from "./zzfx"
 
 
 export const updatePlayer = (dt) => {
     handleControls(dt)
     handleDamage(dt)
+    handleRespawn(dt)
     handleJumping(dt)
     updateWalker(G.player, dt)
 } 
@@ -29,6 +31,21 @@ const handleDamage = (dt) => {
             }
         }
         G.damage.pending = undefined
+    }
+}
+
+
+const handleRespawn = (dt) => {
+    if (G.damage.deathTimer > 0) {
+        G.damage.deathTimer -= dt
+
+        if (G.damage.deathTimer <= 0) {
+            G.player.isDead = false
+            G.player.x = G.damage.lastSavepoint.x - G.damage.lastSavepoint.s * 100
+            G.player.y = G.damage.lastSavepoint.y - 200
+            loadLevel(G.damage.lastSavepointLevel)
+            G.player_courage = G.player_maxCourage
+        }
     }
 }
 

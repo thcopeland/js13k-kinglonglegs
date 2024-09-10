@@ -23,7 +23,8 @@ export const init = () => {
             pending: undefined,
             invincibility: 0,
             deathTimer: 0,
-            lastSavepoint: undefined
+            lastSavepoint: undefined,
+            lastSavepointLevel: 0
         },
         jump: {
             lastTime: -100,

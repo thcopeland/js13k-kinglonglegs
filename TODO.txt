@@ -5,20 +5,22 @@
 * portals between levels
 - courage meter
 - spikes
-* panic
+- panic
 * level brightness
 - words of comfort
-* level editor
+- level editor
 - animations (IK or hardcoded)
-* final boss
+* at least 13 levels
+x final boss
 * end screen
 * talkers
-* pursuing ghosts
-* diving ghosts
+x pursuing ghosts
+x diving ghosts
 
 # Optional
 - IK for walking, jumping
+* nicer respawn
 * adventurers
 * dust
-* music
+x music
 * start screen
