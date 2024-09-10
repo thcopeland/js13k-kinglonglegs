@@ -1,5 +1,4 @@
 import { xorshift, setStrokeAndFill, grayscale } from "./utils"
-import { getAnimation } from "./animation"
 import { WALKER_SKULL, WALKER_FIBULA, WALKER_FEMUR } from "./walker"
 import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK, LAMPPOST } from "./shapes"
 
@@ -23,7 +22,7 @@ export const drawWalker = (walker) => {
     setStrokeAndFill(3, 9, 2)
     for (let i = 0; i < walker.legs.length; i++) {
         const leg = walker.legs[i]
-        const direction = walker.legs > 2 ? (i < walker.legs.length / 2 ? -1 : 1) : walker.facing_
+        const direction = walker.legs > 2 || walker.isDead ? (i < walker.legs.length / 2 ? -1 : 1) : walker.facing_
         // Solve the two-segment inverse kinematics problem. Something like
         // FABRIK is pretty simple but trigonometry is sufficient.
         const c = Math.hypot(leg[0] - leg[2], leg[1] - leg[3])
@@ -45,27 +44,15 @@ export const drawWalker = (walker) => {
 
     ctx.beginPath()
     ctx.arc(0, 0, WALKER_SKULL, 0, 2 * Math.PI)
-    // ctx.fill()
+    ctx.fill()
     ctx.stroke()
-
-    // const animation = getAnimation(walker.anim, walker.anim_time)
-    // drawCurve(animation.slice(2, 8))
-    // drawCurve(animation.slice(8, 14))
-    // drawRoughCircle(animation[0], animation[1], 40, walker.id_, 1)
-    // setStrokeAndFill(3, 0, 2)
-    // ctx.beginPath()
-    // ctx.arc(animation[0] + 20, animation[1], 3, 0, 2*Math.PI)
-    // ctx.fill()
     ctx.restore()
 }
 
 
 export const drawBackdrop = () => {
-    // ctx.save()
-    // ctx.translate(-G.viewport_x, -G.viewport_y)
     ctx.fillStyle = "#888"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    // ctx.restore()
 }
 
 export const drawLevel = () => {
@@ -145,32 +132,32 @@ export const drawParticles = () => {
 }
 
 
-export const drawRoughCircle = (x, y, radius, rng, noise) => {
-    let angle = 0
-    const points = []
-    ctx.beginPath()
-    ctx.arc(x, y, radius, 0, 2*Math.PI)
-    ctx.fill()
-    while (angle < 4*Math.PI) {
-        rng = xorshift(rng)
-        angle += (rng & 255) / 512 + 0.1
-        const s = 1 + ((rng & 255) - 128) / 6000 * noise
-        points.push(Math.cos(angle) * radius*s + x, Math.sin(angle) * radius*s + y)
-    }
-    points.push(points[0], points[1])
-    drawCurve(points, rng, 0)
-}
+// export const drawRoughCircle = (x, y, radius, rng, noise) => {
+//     let angle = 0
+//     const points = []
+//     ctx.beginPath()
+//     ctx.arc(x, y, radius, 0, 2*Math.PI)
+//     ctx.fill()
+//     while (angle < 4*Math.PI) {
+//         rng = xorshift(rng)
+//         angle += (rng & 255) / 512 + 0.1
+//         const s = 1 + ((rng & 255) - 128) / 6000 * noise
+//         points.push(Math.cos(angle) * radius*s + x, Math.sin(angle) * radius*s + y)
+//     }
+//     points.push(points[0], points[1])
+//     drawCurve(points, rng, 0)
+// }
 
 
-export const drawCurve = (points) => {
-    ctx.beginPath()
-    ctx.moveTo(points[0], points[1])
-    for (let i = 2; i < points.length - 2; i += 2) {
-        ctx.quadraticCurveTo(points[i], points[i+1], (points[i] + points[i + 2]) / 2, (points[i + 1] + points[i + 3]) / 2)
-    }
-    ctx.lineTo(points[points.length-2], points[points.length-1])
-    ctx.stroke()
-}
+// export const drawCurve = (points) => {
+//     ctx.beginPath()
+//     ctx.moveTo(points[0], points[1])
+//     for (let i = 2; i < points.length - 2; i += 2) {
+//         ctx.quadraticCurveTo(points[i], points[i+1], (points[i] + points[i + 2]) / 2, (points[i + 1] + points[i + 3]) / 2)
+//     }
+//     ctx.lineTo(points[points.length-2], points[points.length-1])
+//     ctx.stroke()
+// }
 
 
 export const drawGameObjects = () => {

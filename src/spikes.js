@@ -51,42 +51,45 @@ export const updateSpikes = (obj, dt) => {
         if (obj.type_ != "spikes" || obj.positions == undefined || obj.extension == undefined || ((obj.speed_ == undefined) ^ (obj.delay == undefined)))
             throw new Error("invalid game object passed to updateSpike " + JSON.stringify(obj))
     }
-    for (let i = 0; i < obj.positions.length; i += 4) {
-        const dx = G.player.x - (obj.positions[i] + obj.reach * obj.extension[i/2] * obj.positions[i+2])
-        const dy = G.player.y + 40 - (obj.positions[i+1] + obj.reach * obj.extension[i/2] * obj.positions[i+3])
-        const dist = Math.hypot(dx, dy)
-        const proj = obj.reach * (dx * obj.extension[i/2] + dy * obj.extension[i/2]) / dist
-        if (proj > 0.8 && dist < 50 && obj.extension[i/2] > 0.75) {
-            G.pendingDamage ||= { cause: "spikes", push_x: obj.positions[i+2], push_y: obj.positions[i+3] }
-        }
 
-        if (obj.speed_ !== undefined) {
-            if (obj.extension[i/2] === 1 && dist > 250) { // extended
-                obj.extension[i/2+1] += dt
-                if (obj.extension[i/2+1] > 3000) {
-                    obj.extension[i/2] -= 0.001
-                    obj.extension[i/2+1] = -1
-                }
-            } else if (obj.extension[i/2] > 0 && obj.extension[i/2+1] < 0) { // retracting
-                obj.extension[i/2] -= obj.speed_ * dt
-                if (obj.extension[i/2] <= 0) {
-                    obj.extension[i/2] = 0
-                    obj.extension[i/2+1] = 0
-                }
-            } else if (obj.extension[i/2] > 0 && obj.extension[i/2+1] > 0) { // extending
-                obj.extension[i/2+1] += dt
-                if (obj.extension[i/2+1] > obj.delay) {
-                    obj.extension[i/2] += obj.speed_ * dt
-                    if (obj.extension[i/2] >= 1) {
-                        obj.extension[i/2] = 1
+    if (!G.player.isDead) {
+        for (let i = 0; i < obj.positions.length; i += 4) {
+            const dx = G.player.x - (obj.positions[i] + obj.reach * obj.extension[i/2] * obj.positions[i+2])
+            const dy = G.player.y + 80 - (obj.positions[i+1] + obj.reach * obj.extension[i/2] * obj.positions[i+3])
+            const dist = Math.hypot(dx, dy)
+            const proj = obj.reach * (dx * obj.extension[i/2] + dy * obj.extension[i/2]) / dist
+            if (proj > 0.8 && dist < 50 && obj.extension[i/2] > 0.75) {
+                G.damage.pending ||= { push_x: obj.positions[i+2], push_y: obj.positions[i+3] }
+            }
+
+            if (obj.speed_ !== undefined) {
+                if (obj.extension[i/2] === 1 && dist > 250) { // extended
+                    obj.extension[i/2+1] += dt
+                    if (obj.extension[i/2+1] > 3000) {
+                        obj.extension[i/2] -= 0.001
+                        obj.extension[i/2+1] = -1
                     }
+                } else if (obj.extension[i/2] > 0 && obj.extension[i/2+1] < 0) { // retracting
+                    obj.extension[i/2] -= obj.speed_ * dt
+                    if (obj.extension[i/2] <= 0) {
+                        obj.extension[i/2] = 0
+                        obj.extension[i/2+1] = 0
+                    }
+                } else if (obj.extension[i/2] > 0 && obj.extension[i/2+1] > 0) { // extending
+                    obj.extension[i/2+1] += dt
+                    if (obj.extension[i/2+1] > obj.delay) {
+                        obj.extension[i/2] += obj.speed_ * dt
+                        if (obj.extension[i/2] >= 1) {
+                            obj.extension[i/2] = 1
+                        }
+                    }
+                } else if (dist < 80 ||
+                    (i < obj.positions.length - 4 && obj.extension[i/2 + 2] > 0.2 && obj.extension[i/2 + 3] > 0 && obj.extension[i/2 + 3] < 2000) ||
+                    (i > 4 && obj.extension[i/2 - 2] > 0.2 && obj.extension[i/2 - 1] > 0 && obj.extension[i/2 - 1] < 2000)) { // retracted
+                    // Extend if the player is nearby or a neighbor is extending.
+                    obj.extension[i/2] = 0.001
+                    obj.extension[i/2+1] = 1
                 }
-            } else if (dist < 80 ||
-                (i < obj.positions.length - 4 && obj.extension[i/2 + 2] > 0.2 && obj.extension[i/2 + 3] > 0 && obj.extension[i/2 + 3] < 2000) ||
-                (i > 4 && obj.extension[i/2 - 2] > 0.2 && obj.extension[i/2 - 1] > 0 && obj.extension[i/2 - 1] < 2000)) { // retracted
-                // Extend if the player is nearby or a neighbor is extending.
-                obj.extension[i/2] = 0.001
-                obj.extension[i/2+1] = 1
             }
         }
     }
