@@ -16,7 +16,7 @@ export const init = () => {
         mode: 1, // Start, Game, Game Over
         level: undefined,
         level_num: 0,
-        player: newWalker(42, 400, 100, 2),
+        player: newWalker(42, 440, 1700, 2),
         player_courage: 3,
         player_maxCourage: 3,
         damage: {
@@ -55,14 +55,6 @@ export const game = (dt) => {
     // dt /= 10
     G.t += dt
 
-    enforceLevelBounds()
-    updatePlayer(dt)
-    updateGameObjects(dt)
-    updateParticles(dt)
-    updateMessages(dt)
-    updateStats(dt)
-    adjustViewport(dt)
-
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     drawBackdrop()
     drawWalker(G.player)
@@ -72,10 +64,17 @@ export const game = (dt) => {
     drawMessages()
     drawStats()
 
-
     if (IS_DEVELOPMENT_BUILD && window.E && E.enabled) {
         E.draw()
-     }
+    }
+
+    enforceLevelBounds()
+    updatePlayer(dt)
+    updateGameObjects(dt)
+    updateParticles(dt)
+    updateMessages(dt)
+    updateStats(dt)
+    adjustViewport(dt)
 }
 
 

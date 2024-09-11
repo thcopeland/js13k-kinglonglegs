@@ -58,7 +58,7 @@ export const drawBackdrop = () => {
 export const drawLevel = () => {
     ctx.save()
     ctx.translate(-G.viewport_x, -G.viewport_y)
-    setStrokeAndFill(0, 10, 1)
+    setStrokeAndFill(0, 6, 1)
     G.level.walls.forEach((block, seed) => {
         const roughness = block[0]
         const points = block.slice(1)

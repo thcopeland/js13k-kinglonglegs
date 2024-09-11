@@ -7,16 +7,16 @@ import { zzfx } from "./zzfx"
 export const updatePlayer = (dt) => {
     if (IS_DEVELOPMENT_BUILD && G.isEditPaused) {
         if (G.keys["ArrowLeft"]) {
-            G.player.x -= 8
+            G.player.x -= 12
         }
         if (G.keys["ArrowRight"]) {
-            G.player.x += 8
+            G.player.x += 12
         }
         if (G.keys["ArrowUp"]) {
-            G.player.y -= 8
+            G.player.y -= 12
         }
         if (G.keys["ArrowDown"]) {
-            G.player.y += 8
+            G.player.y += 12
         }
     } else {
         handleControls(dt)

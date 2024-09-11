@@ -5,7 +5,7 @@ export const WALKER_FEMUR = 40
 export const WALKER_FIBULA = 50
 export const WALKER_SKULL = 30
 const LEG_LENGTH = WALKER_FEMUR + WALKER_FIBULA
-const LEG_OFFSET = LEG_LENGTH + WALKER_SKULL / 2
+export const LEG_OFFSET = LEG_LENGTH + WALKER_SKULL / 2
 
 const LEG_PLANTED = 0
 const LEG_LIFTING = 1
@@ -53,7 +53,7 @@ export const updateWalker = (walker, dt) => {
     for (let i = 0; i < 3 && movementTime > 1e-3; i++) {
         const feetCollision = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, walker.vx, walker.vy, 30)
         const headCollision = raycastTerrain(walker.x, walker.y, walker.vx, walker.vy, WALKER_SKULL)
-        const collision = headCollision.t < headCollision.t || walker.isDead ? headCollision : feetCollision
+        const collision = headCollision.t < feetCollision.t || walker.isDead ? headCollision : feetCollision
 
         if (collision.t <= movementTime) {
             const effective_t = Math.max(0, collision.t - 0.001)

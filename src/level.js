@@ -1,6 +1,8 @@
 import { newSpikes } from "./spikes"
 import { newWords } from "./comfort"
 import { newLamppost } from "./lamppost"
+import { LEG_OFFSET } from "./walker" // Circular dependency :(
+import { importLevel } from "./editor/level"
 
 export const loadLevel = (num) => {
     const level = LEVELS[num]
@@ -8,6 +10,11 @@ export const loadLevel = (num) => {
     G.level_num = num
     G.npcs = level.npcs
     G.objects = level.objects
+
+    if (IS_DEVELOPMENT_BUILD && E.enabled) {
+        console.log("CURRENT LEVEL: " + num + " " + LEVELS[num].level_name)
+        importLevel()
+    }
 }
 
 
@@ -17,35 +24,54 @@ export const enforceLevelBounds = () => {
     const aboveMargin = 50
     const belowMargin = 100
 
+    if (IS_DEVELOPMENT_BUILD && E.enabled && G.isEditPaused && E.tool === "add") {
+        // Don't switch levels at inconvenient times.
+        return
+    }
+
+    const viewportOffsetX = G.viewport_x - G.player.x
+    const viewportOffsetY = G.viewport_y - G.player.y
     if (G.player.x < horizonalMargin) {
         loadLevel(level.level_left[0])
         G.player.y += level.level_left[1]
-        G.player.x = G.level.level_w - horizonalMargin
-        if (IS_DEVELOPMENT_BUILD && level.level_left[1] !== -G.level.level_right[1]) {
+        G.player.x = G.level.level_w - horizonalMargin - 1
+        if (IS_DEVELOPMENT_BUILD && level.level_left[1] !== -G.level.level_right[1] && level !== G.level) {
             console.error("Asymmetric left->right transition between " + level.level_name + " and " + G.level.level_name)
         }
     } else if (G.player.x > level.level_w - horizonalMargin) {
         loadLevel(level.level_right[0])
         G.player.y += level.level_right[1]
-        G.player.x = horizonalMargin
-        if (IS_DEVELOPMENT_BUILD && level.level_right[1] !== -G.level.level_left[1]) {
+        G.player.x = horizonalMargin + 1
+        if (IS_DEVELOPMENT_BUILD && level.level_right[1] !== -G.level.level_left[1] && level !== G.level) {
             console.error("Asymmetric right->left transition between " + level.level_name + " and " + G.level.level_name)
         }
     } else if (G.player.y < aboveMargin) {
         loadLevel(level.level_up[0])
         G.player.x += level.level_up[1]
         G.player.y = G.level.level_h - belowMargin
-        if (IS_DEVELOPMENT_BUILD && level.level_up[1] !== -G.level.level_down[1]) {
+        if (IS_DEVELOPMENT_BUILD && level.level_up[1] !== -G.level.level_down[1] && level !== G.level) {
             console.error("Asymmetric up->down transition between " + level.level_name + " and " + G.level.level_name)
         }
     } else if (G.player.y > level.level_h - belowMargin) {
         loadLevel(level.level_down[0])
         G.player.x += level.level_down[1]
         G.player.y = aboveMargin
-        if (IS_DEVELOPMENT_BUILD && level.level_down[1] !== -G.level.level_up[1]) {
+        if (IS_DEVELOPMENT_BUILD && level.level_down[1] !== -G.level.level_up[1] && level !== G.level) {
             console.error("Asymmetric down_up transition between " + level.level_name + " and " + G.level.level_name)
         }
+    } else {
+        return
     }
+
+    // Ensure the player doesn't fall through the ground between levels.
+    // This isn't strictly necessary but it makes level design much easier.
+    const ground = raycastTerrain(G.player.x, G.player.y + LEG_OFFSET - 30, 0, 1, 30)
+    if (IS_DEVELOPMENT_BUILD && ground.t > 50)
+        console.error("difference:" + (G.player.y - (ground.contact_y - LEG_OFFSET)))
+    if (ground.t < 50)
+        G.player.y = ground.contact_y - LEG_OFFSET - 1
+    G.viewport_x = viewportOffsetX + G.player.x
+    G.viewport_y = viewportOffsetY + G.player.y
 }
 
 
@@ -156,32 +182,60 @@ const qroot = (a, b, c) => {
 
 
 const LEVELS = [
-    // Introduction
     {
         level_name: "One",
-        level_w: 2000,
+        level_w: 4000,
         level_h: 2000,
         level_left: [0, 0],
+        level_right: [1, -1000],
+        level_up: [0, 0],
+        level_down: [0, 0],
+        objects: [
+            newLamppost(342, 1824, true, -1, 0),
+            newWords("Far below the king waits.\nBe bold.", 3801, 1198, 0)
+        ],
+        walls: [
+            [ 20,	1330, 1870, 1430, 1780, 1510, 1760, 1600, 1870, 1330, 1870 ],
+            [ 15,	1710, 1900, 1840, 1770, 1770, 1560, 1970, 1600, 2080, 1700, 2160, 1700, 2170, 1900, 1710, 1900 ],
+            [ 20,	4000, 1510, 3650, 1480, 3450, 1380, 3450, 1220, 4000, 1180 ],
+            [ 20,	4000, 1200, 3960, 1170, 3980, 840, 3560, 670, 3030, 560, 2640, 710, 2630, 910, 2920, 1180, 3070, 1270, 3070, 1410, 2770, 1430, 2470, 1220, 1880, 1090, 1480, 430, 0, 460, 0, 360, 4000, 260 ],
+            [ 20,	0, 450, 70, 1050, 120, 1610, 310, 1820, 4000, 1870, 4000, 2000, 0, 2000 ],
+            [ 15,	3290, 1560, 3480, 1560, 3470, 1650, 3250, 1660, 3290, 1560 ]
+        ],
+        colliders: [
+            [ 1330, 1870, 1430, 1780, 1510, 1760, 1600, 1870, 1330, 1870 ],
+            [ 1710, 1900, 1840, 1770, 1770, 1560, 1970, 1600, 2080, 1700, 2160, 1700, 2170, 1900, 1710, 1900 ],
+            [ 4000, 1510, 3650, 1480, 3450, 1380, 3450, 1220, 4000, 1180 ],
+            [ 4000, 1200, 3960, 1170, 3980, 840, 3560, 670, 3030, 560, 2640, 710, 2630, 910, 2920, 1180, 3070, 1270, 3070, 1410, 2770, 1430, 2470, 1220, 1880, 1090, 1480, 430, 0, 460, 0, 360, 4000, 260 ],
+            [ 0, 450, 70, 1050, 120, 1610, 310, 1820, 4000, 1870, 4000, 2000, 0, 2000 ],
+            [ 3290, 1560, 3480, 1560, 3470, 1650, 3250, 1660, 3290, 1560 ]
+        ]
+    },
+    {
+        level_name: "Two",
+        level_w: 3200,
+        level_h: 3000,
+        level_left: [0, 1000],
         level_right: [0, 0],
         level_up: [0, 0],
         level_down: [0, 0],
         objects: [
-            newSpikes([0, 500, 1000, 500, 1200, 600, 1200, 700, -10, 700], 30, undefined, undefined),
-            newSpikes([1300, 600, 1500, 600, 1500, 700, 1300, 700, 1300, 600], 30, 0.003, 100),
-            newWords("The path ahead is dark.\nTake courage.", 700, 205, -0.05),
-            newLamppost(1350, 600, false, -1, -0.1)
+            newWords("Fortune favors the bold.", 3008, 1235, 0),
+            newLamppost(299, 2539, false, -1, -0.15),
+            newSpikes([570, 2100, 300, 2070], 40, undefined, undefined),
+            newSpikes([820, 2130, 560, 2100], 30, undefined, undefined)
         ],
         walls: [
-            [ 10,	0, 500, 1000, 500, 1200, 600, 1200, 700, -10, 700 ],
-            [ 1,	1300, 600, 1500, 600, 1500, 700, 1300, 700, 1300, 600 ],
-            [ 30,	300, 300, 700, 200, 800, 200, 700, 300, 300, 300 ],
-            [ 30,	-10, -60, 290, -80, 340, -40, 60, 20, 260, 300, 20, 360, -60, 110, -10, -60 ]
+            [ 20,	0, 900, 730, 900, 1090, 960, 1290, 1070, 1290, 1220, 1120, 1450, 1120, 2230, 1040, 2360, 820, 2130, 300, 2070, 200, 2480, 340, 2540, 340, 2630, 3200, 2720, 3200, 3000, 0, 2990 ],
+            [ 30,	1910, 1230, 2360, 1220, 2330, 1350, 2010, 1340, 1970, 1280, 1910, 1230 ],
+            [ 30,	3200, 120, 3200, 870, 3030, 860, 2780, 840, 2730, 770, 2460, 790, 2230, 650, 2070, 630, 1930, 650, 1880, 730, 1740, 690, 1700, 590, 1670, 540, 1190, 360, 570, 450, 0, 500, -10, 80 ],
+            [ 30,	3200, 2260, 2670, 2210, 2410, 2040, 2350, 1780, 2550, 1600, 2700, 1260, 3000, 1240, 3200, 1200 ]
         ],
         colliders: [
-            [ 0, 500, 1000, 500, 1200, 600, 1200, 700, -10, 700 ],
-            [ 1300, 600, 1500, 600, 1500, 700, 1300, 700, 1300, 600 ],
-            [ 300, 300, 700, 200, 800, 200, 700, 300, 300, 300 ],
-            [ -10, -60, 290, -80, 340, -40, 60, 20, 260, 300, 20, 360, -60, 110, -10, -60 ]
+            [ 0, 900, 730, 900, 1090, 960, 1290, 1070, 1290, 1220, 1120, 1450, 1120, 2230, 1040, 2360, 820, 2130, 300, 2070, 200, 2480, 340, 2540, 340, 2630, 3200, 2720, 3200, 3000, 0, 2990 ],
+            [ 1910, 1230, 2360, 1220, 2330, 1350, 2010, 1340, 1970, 1280, 1910, 1230 ],
+            [ 3200, 120, 3200, 870, 3030, 860, 2780, 840, 2730, 770, 2460, 790, 2230, 650, 2070, 630, 1930, 650, 1880, 730, 1740, 690, 1700, 590, 1670, 540, 1190, 360, 570, 450, 0, 500, -10, 80 ],
+            [ 3200, 2260, 2670, 2210, 2410, 2040, 2350, 1780, 2550, 1600, 2700, 1260, 3000, 1240, 3200, 1200 ]
         ]
     }
 ]

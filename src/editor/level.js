@@ -8,10 +8,12 @@ const reducePrecision = x => Math.round(x/10)*10
 export const exportLevel = () => {
     const wallData = E.walls
         // .sort((a, b) => a.points[0] - b.points[0])
+        .filter(({ points }) => points.length > 2)
         .map(({ roughness, points }) => `        [ ${roughness},\t${points.map(reducePrecision).join(", ")} ]`)
         .join(",\n")
     const colliderData = E.colliders
         // .sort((a, b) => a.points[0] - b.points[0])
+        .filter(({ points }) => points.length > 2)
         .map(({ points }) => `        [ ${points.map(reducePrecision).join(", ")} ]`)
         .join(",\n")
     const objectData = E.objects

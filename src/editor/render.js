@@ -4,11 +4,15 @@ export const drawEditor = () => {
     if (E.objectData !== undefined) {
         if (E.objectData.type === "wall" && E.objectData.points.length > 0) {
             ctx.strokeStyle = "#ff0"
+            ctx.fillStyle = "#ff0"
             ctx.beginPath()
             ctx.lineWidth = 1
             ctx.moveTo(E.objectData.points[0], E.objectData.points[1])
-            for (let i = 0; i < E.objectData.points.length; i += 2)
+            ctx.fillRect(E.objectData.points[0] - 2, E.objectData.points[1] - 2, 4, 4)
+            for (let i = 0; i < E.objectData.points.length; i += 2) {
+                ctx.fillRect(E.objectData.points[i] - 2, E.objectData.points[i+1] - 2, 4, 4)
                 ctx.lineTo(E.objectData.points[i], E.objectData.points[i+1])
+            }
             ctx.stroke()
 
             if (E.objectSubIndex >= 0) {

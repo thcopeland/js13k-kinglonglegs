@@ -1,6 +1,7 @@
 import { importLevel, exportLevel, syncLevel } from "./level"
 import { editorOnMouseDown, editorOnMouseUp, editorOnMouseMove } from "./mouse"
 import { deleteTool } from "./deleteTool"
+import { flipNormalsTool } from "./flipNormalsTool"
 import { drawEditor } from "./render"
 
 export const initEditor = () => {
@@ -82,6 +83,8 @@ export const initEditor = () => {
             importLevel() // Undo any in progress operations
         } else if (evt.key === "Delete") {
             deleteTool()
+        } else if (evt.key === "N") {
+            flipNormalsTool()
         }
     })
 
