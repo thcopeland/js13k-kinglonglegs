@@ -5,8 +5,8 @@ import { initEditor } from "./editor/editor"
 
 
 const canvas = document.querySelector("canvas")
-canvas.width = Math.min(1600, innerWidth-100)
-canvas.height = Math.min(900, innerHeight-100)
+canvas.width = Math.min(1600, innerWidth-50)
+canvas.height = Math.min(900, innerHeight-50)
 ctx = canvas.getContext("2d")
 
 G = { }
@@ -26,13 +26,13 @@ let lastTime
 addEventListener("keydown", (evt) => G.keys[evt.key] = true)
 addEventListener("keyup", (evt) => G.keys[evt.key] = false)
 addEventListener("blur", () => {
-    Object.keys(G.keys).forEach(key => G.keys[key] = false)
+    G.keys = {}
     lastTime = undefined
 })
 
 const loop = (time) => {
-    if (time != undefined && document.visibilityState == "visible") {
-        const dt = lastTime == undefined ? 0 : (time - lastTime) / 1
+    if (time != undefined && document.visibilityState === "visible") {
+        const dt = lastTime === undefined ? 0 : (time - lastTime) / 1
         game(dt)
         lastTime = time
     }

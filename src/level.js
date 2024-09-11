@@ -159,12 +159,6 @@ const LEVELS = [
     // Introduction
     {
         level_name: "One",
-        enter_hook: () => {},
-        exit_hook: () => {},
-        update_hook: () => {},
-        draw_hook: () => {},
-        brightness: 1,
-        dust: 0,
         level_w: 2000,
         level_h: 2000,
         level_left: [0, 0],
