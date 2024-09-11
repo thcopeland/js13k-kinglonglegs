@@ -1,4 +1,5 @@
 import { importLevel, exportLevel, syncLevel } from "./level"
+import { loadLevel } from "../level"
 import { editorOnMouseDown, editorOnMouseUp, editorOnMouseMove } from "./mouse"
 import { deleteTool } from "./deleteTool"
 import { flipNormalsTool } from "./flipNormalsTool"
@@ -85,6 +86,11 @@ export const initEditor = () => {
             deleteTool()
         } else if (evt.key === "N") {
             flipNormalsTool()
+        } else if (evt.key === "T") {
+            const level = parseInt(prompt("What level to you want to teleport to?"))
+            if (!isNaN(level)) {
+                loadLevel(level)
+            }
         }
     })
 

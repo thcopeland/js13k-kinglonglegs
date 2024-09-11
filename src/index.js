@@ -6,7 +6,7 @@ import { initEditor } from "./editor/editor"
 
 const canvas = document.querySelector("canvas")
 canvas.width = Math.min(1600, innerWidth-50)
-canvas.height = Math.min(900, innerHeight-50)
+canvas.height = Math.min(1200, innerHeight-50)
 ctx = canvas.getContext("2d")
 
 G = { }

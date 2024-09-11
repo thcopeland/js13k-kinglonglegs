@@ -1,7 +1,7 @@
 export const selectTool = () => {
     const [x, y] = E.mouse.currentXY
     
-    if (x !== E.mouse.clickXY[0] || y !== E.mouse.clickXY[1])
+    if (Math.hypot(x - E.mouse.clickXY[0], y - E.mouse.clickXY[1]) > 5)
         return;
 
 

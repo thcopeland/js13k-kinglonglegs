@@ -9,12 +9,12 @@ export const exportLevel = () => {
     const wallData = E.walls
         // .sort((a, b) => a.points[0] - b.points[0])
         .filter(({ points }) => points.length > 2)
-        .map(({ roughness, points }) => `        [ ${roughness},\t${points.map(reducePrecision).join(", ")} ]`)
+        .map(({ roughness, points }) => `        [ ${roughness},\t${points.map(reducePrecision).map(x => Math.max(x, 0)).join(", ")} ]`)
         .join(",\n")
     const colliderData = E.colliders
         // .sort((a, b) => a.points[0] - b.points[0])
         .filter(({ points }) => points.length > 2)
-        .map(({ points }) => `        [ ${points.map(reducePrecision).join(", ")} ]`)
+        .map(({ points }) => `        [ ${points.map(reducePrecision).map(x => Math.max(x, 0)).join(", ")} ]`)
         .join(",\n")
     const objectData = E.objects
         .map((obj) => {
@@ -28,8 +28,7 @@ export const exportLevel = () => {
         })
         .join(",\n")
 
-    const data = `{
-    objects: [
+    const data = `objects: [
 ${objectData}
     ],
     walls: [
@@ -37,8 +36,7 @@ ${wallData}
     ],
     colliders: [
 ${colliderData}
-    ]
-}`
+    ]`
     navigator.clipboard.writeText(data)
     console.log(data)
 }

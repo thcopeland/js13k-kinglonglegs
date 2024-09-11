@@ -19,7 +19,7 @@ export const drawWalker = (walker) => {
     ctx.save()
     ctx.translate(walker.x - G.viewport_x, walker.y - G.viewport_y)
     // ctx.scale(walker.facing_*walker.scale_, walker.scale_)
-    setStrokeAndFill(3, 9, 2)
+    setStrokeAndFill(0, 0, 2)
     for (let i = 0; i < walker.legs.length; i++) {
         const leg = walker.legs[i]
         const direction = walker.legs > 2 || walker.isDead ? (i < walker.legs.length / 2 ? -1 : 1) : walker.facing_
@@ -51,7 +51,7 @@ export const drawWalker = (walker) => {
 
 
 export const drawBackdrop = () => {
-    ctx.fillStyle = "#888"
+    ctx.fillStyle = "#aaa"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
 }
 
@@ -80,12 +80,15 @@ export const drawLevel = () => {
                 const dist = Math.hypot(dx, dy)
                 const nx = dy / dist
                 const ny = -dx / dist
-                for (let f = 0; f < dist; f += (rng % 16) + 16)
+                for (let f = 0; f < dist; f += (rng % 32) + 32)
                 {
                     ctx.lineTo(
-                        x + dx / dist * f + nx * (Math.abs(rng=xorshift(rng))%roughness),
+                        x + dx * f / dist + nx * (Math.abs(rng=xorshift(rng))%roughness),
                         y + dy * f / dist + ny * (Math.abs(rng=xorshift(rng))%roughness))
                 }
+                ctx.lineTo(
+                    x + dx + nx * (Math.abs(rng=xorshift(rng))%roughness),
+                    y + dy + ny * (Math.abs(rng=xorshift(rng))%roughness))
             }
         }
         ctx.closePath()
@@ -109,14 +112,14 @@ export const drawLevel = () => {
 }
 
 
-export const drawParticles = () => {
+export const drawParticles = (screenspace) => {
     ctx.save()
     ctx.translate(-G.viewport_x, -G.viewport_y)
     setStrokeAndFill(13, 15, 1)
     for (let i = 0; i < G.particles.length; i++)
     {
         const particle = G.particles[i]
-        if (particle !== undefined)  {
+        if (particle !== undefined && particle.screenspace == screenspace)  {
             const px = particle.screenspace ? particle.x + G.viewport_x : particle.x
             const py = particle.screenspace ? particle.y + G.viewport_y : particle.y
             if (px > G.viewport_x - 10 && px < G.viewport_x + G.viewport_w + 10 &&
@@ -167,7 +170,7 @@ export const drawGameObjects = () => {
         const object = G.level.objects[i]
         let rng = xorshift(i | 11)
         if (object.type_ === "spikes") {
-            setStrokeAndFill(0, 10, 2)
+            setStrokeAndFill(0, 14, 2)
             ctx.beginPath()
             for (let j = 0; j < object.positions.length; j += 4) {
                 rng = xorshift(rng)

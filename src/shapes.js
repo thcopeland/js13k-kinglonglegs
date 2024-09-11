@@ -7,7 +7,7 @@ const parseShape = (shape) =>
 
 
 export const WORDS_OF_COMFORT_PEDESTAL = parseShape(
-    "S0F10W1" +
+    "S15F0W1" +
     "r -40,0 80,-20" +
     "l -40,-20 40,-20 25,-30 -25,-30 Zfs" +
     "r -25,-30 50,-100" +
@@ -15,13 +15,11 @@ export const WORDS_OF_COMFORT_PEDESTAL = parseShape(
     "r -60,-140 120,-15")
 
 export const WORDS_OF_COMFORT_BOOK = parseShape(
-    "W2Al -35,0 -7,0 a 0,12 15 4.1,5.39 l 35,0 s" +
+    "S0F14 W2Al -35,0 -7,0 a 0,12 15 4.1,5.39 l 35,0 s" +
     "W1Al -33,-1 -7,-1 a 0,11 15 4.1,5.39 l 33,-1 29,-6 15,-9 7,-8 0,-5 -7,-8 -15,-9 -29,-5 Zfs")
 
 
 export const LAMPPOST = parseShape(
-    // "F14S15W2" +
-    // "Aa -100,-220,30,0,6.28 fs" +
     "F1S1W0" +
     "r -12,-80 24,80 Al 6,-80 3,-250 -3,-250 -6,-80 Zf" +
     "W6 Aa -50,-250,50,3.16,0 s" +

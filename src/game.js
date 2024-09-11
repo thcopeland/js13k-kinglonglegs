@@ -59,8 +59,9 @@ export const game = (dt) => {
     drawBackdrop()
     drawWalker(G.player)
     drawGameObjects()
-    drawParticles()
+    drawParticles(false)
     drawLevel()
+    drawParticles(true)
     drawMessages()
     drawStats()
 

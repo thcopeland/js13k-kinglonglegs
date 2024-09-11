@@ -12,7 +12,7 @@ export const newSpikes = (vertices, reach, speed_, delay) => {
         const dist = Math.hypot(dx, dy)
         dx /= dist
         dy /= dist
-        for (let d = 0; d < dist; d += 10) {
+        for (let d = 0; d < dist; d += 16) {
             if (nx === 0 && ny === 0 || d > 30) {
                 nx = dy
                 ny = -dx

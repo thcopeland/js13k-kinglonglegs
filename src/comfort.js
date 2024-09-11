@@ -28,7 +28,7 @@ export const updateWords = (obj, dt) => {
                 undefined,
                 obj.x + 60 * (Math.random() - 0.5),
                 obj.y - 180,
-                5000 + 300 * Math.random(),
+                3000 + 300 * Math.random(),
                 -0.002 + 0.001 * Math.random(),
                 0.99,
                 0.1,
