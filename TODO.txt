@@ -2,7 +2,7 @@
 - build tools
 - collision detection
 - basic movement
-* portals between levels
+- portals between levels
 - courage meter
 - spikes
 - panic

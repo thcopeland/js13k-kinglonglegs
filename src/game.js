@@ -1,6 +1,6 @@
 import { drawWalker, drawLevel, drawBackdrop, drawParticles, drawGameObjects, drawMessages } from "./render"
 import { updateParticles } from "./particles"
-import { loadLevel } from "./level"
+import { loadLevel, enforceLevelBounds } from "./level"
 import { updateSpikes } from "./spikes"
 import { updateWords } from "./comfort"
 import { updateLamppost } from "./lamppost"
@@ -55,6 +55,7 @@ export const game = (dt) => {
     // dt /= 10
     G.t += dt
 
+    enforceLevelBounds()
     updatePlayer(dt)
     updateGameObjects(dt)
     updateParticles(dt)

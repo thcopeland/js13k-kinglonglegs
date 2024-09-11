@@ -11,6 +11,44 @@ export const loadLevel = (num) => {
 }
 
 
+export const enforceLevelBounds = () => {
+    const level = G.level
+    const horizonalMargin = 20
+    const aboveMargin = 50
+    const belowMargin = 100
+
+    if (G.player.x < horizonalMargin) {
+        loadLevel(level.level_left[0])
+        G.player.y += level.level_left[1]
+        G.player.x = G.level.level_w - horizonalMargin
+        if (IS_DEVELOPMENT_BUILD && level.level_left[1] !== -G.level.level_right[1]) {
+            console.error("Asymmetric left->right transition between " + level.level_name + " and " + G.level.level_name)
+        }
+    } else if (G.player.x > level.level_w - horizonalMargin) {
+        loadLevel(level.level_right[0])
+        G.player.y += level.level_right[1]
+        G.player.x = horizonalMargin
+        if (IS_DEVELOPMENT_BUILD && level.level_right[1] !== -G.level.level_left[1]) {
+            console.error("Asymmetric right->left transition between " + level.level_name + " and " + G.level.level_name)
+        }
+    } else if (G.player.y < aboveMargin) {
+        loadLevel(level.level_up[0])
+        G.player.x += level.level_up[1]
+        G.player.y = G.level.level_h - belowMargin
+        if (IS_DEVELOPMENT_BUILD && level.level_up[1] !== -G.level.level_down[1]) {
+            console.error("Asymmetric up->down transition between " + level.level_name + " and " + G.level.level_name)
+        }
+    } else if (G.player.y > level.level_h - belowMargin) {
+        loadLevel(level.level_down[0])
+        G.player.x += level.level_down[1]
+        G.player.y = aboveMargin
+        if (IS_DEVELOPMENT_BUILD && level.level_down[1] !== -G.level.level_up[1]) {
+            console.error("Asymmetric down_up transition between " + level.level_name + " and " + G.level.level_name)
+        }
+    }
+}
+
+
 // Perform a swept sphere vs line segment collision.
 export const raycastTerrain = (x, y, vx, vy, radius) => {
     // ctx.save()
@@ -120,6 +158,7 @@ const qroot = (a, b, c) => {
 const LEVELS = [
     // Introduction
     {
+        level_name: "One",
         enter_hook: () => {},
         exit_hook: () => {},
         update_hook: () => {},
@@ -128,6 +167,10 @@ const LEVELS = [
         dust: 0,
         level_w: 2000,
         level_h: 2000,
+        level_left: [0, 0],
+        level_right: [0, 0],
+        level_up: [0, 0],
+        level_down: [0, 0],
         objects: [
             newSpikes([0, 500, 1000, 500, 1200, 600, 1200, 700, -10, 700], 30, undefined, undefined),
             newSpikes([1300, 600, 1500, 600, 1500, 700, 1300, 700, 1300, 600], 30, 0.003, 100),

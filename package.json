@@ -1,5 +1,5 @@
 {
-  "name": "leggyboi",
+  "name": "kingloglegs",
   "version": "0.0.0",
   "scripts": {
     "build": "npx rollup -c",
