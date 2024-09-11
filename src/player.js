@@ -5,11 +5,26 @@ import { zzfx } from "./zzfx"
 
 
 export const updatePlayer = (dt) => {
-    handleControls(dt)
-    handleDamage(dt)
-    handleRespawn(dt)
-    handleJumping(dt)
-    updateWalker(G.player, dt)
+    if (IS_DEVELOPMENT_BUILD && G.isEditPaused) {
+        if (G.keys["ArrowLeft"]) {
+            G.player.x -= 8
+        }
+        if (G.keys["ArrowRight"]) {
+            G.player.x += 8
+        }
+        if (G.keys["ArrowUp"]) {
+            G.player.y -= 8
+        }
+        if (G.keys["ArrowDown"]) {
+            G.player.y += 8
+        }
+    } else {
+        handleControls(dt)
+        handleDamage(dt)
+        handleRespawn(dt)
+        handleJumping(dt)
+        updateWalker(G.player, dt)
+    }
 } 
 
 

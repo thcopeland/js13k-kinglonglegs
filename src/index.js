@@ -15,6 +15,9 @@ if (IS_DEVELOPMENT_BUILD) {
     addEventListener("keydown", (evt) => {
         if (evt.key === "e" && !E.enabled) {
            initEditor()
+           G.isEditPaused = true
+        } else if (evt.key === "p") {
+            G.isEditPaused = !G.isEditPaused
         }
     })
 }
