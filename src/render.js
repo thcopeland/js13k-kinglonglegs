@@ -52,7 +52,7 @@ export const drawWalker = (walker) => {
 
 export const drawBackdrop = () => {
     ctx.fillStyle = "#aaa"
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    ctx.fillRect(0, 0, G.viewport_w, G.viewport_h)
 }
 
 export const drawLevel = () => {

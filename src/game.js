@@ -14,11 +14,14 @@ import { newWalker } from "./walker"
 
 
 export const init = () => {
+    let scale = ctx.canvas.height < 900 ? ctx.canvas.height / 900 : 1
+    ctx.scale(scale, scale)
+
     G = {
         mode: 1, // Start, Game, Game Over
         level: undefined,
         level_num: 0,
-        player: newWalker(42, 440, 1700, 2),
+        player: newWalker(1, 440, 1700, 2),
         player_courage: 20,
         player_maxCourage: 20,
         damage: {
@@ -42,8 +45,8 @@ export const init = () => {
         messages: [],
         viewport_x: 0,
         viewport_y: 0,
-        viewport_w: ctx.canvas.width,
-        viewport_h: ctx.canvas.height,
+        viewport_w: ctx.canvas.width / scale,
+        viewport_h: ctx.canvas.height / scale,
         keys: {},
         t: 0
     }
