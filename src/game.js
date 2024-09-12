@@ -1,4 +1,4 @@
-import { drawWalker, drawLevel, drawBackdrop, drawParticles, drawGameObjects, drawMessages } from "./render"
+import { drawWalker, drawLevel, drawBackdrop, drawNpcs, drawParticles, drawGameObjects, drawMessages } from "./render"
 import { updateParticles } from "./particles"
 import { loadLevel, enforceLevelBounds } from "./level"
 import { updateSpikes } from "./spikes"
@@ -7,6 +7,7 @@ import { updateLamppost } from "./lamppost"
 import { updateMessages } from "./message"
 import { updateWater } from "./water"
 import { updatePlayer } from "./player"
+import { updateTalker } from "./talker"
 import { updateStats, drawStats } from "./stats"
 import { adjustViewport } from "./viewport"
 import { newWalker } from "./walker"
@@ -59,6 +60,7 @@ export const game = (dt) => {
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     drawBackdrop()
     drawWalker(G.player)
+    drawNpcs()
     drawGameObjects()
     drawParticles(false)
     drawLevel()
@@ -75,6 +77,7 @@ export const game = (dt) => {
 
     enforceLevelBounds()
     updatePlayer(dt)
+    updateNpcs(dt)
     updateGameObjects(dt)
     updateParticles(dt)
     updateMessages(dt)
@@ -98,6 +101,14 @@ const updateGameObjects = (dt) => {
             if (IS_DEVELOPMENT_BUILD) {
                 throw new Error("Invalid game object "  + JSON.stringify(obj))
             }
+        }
+    }
+}
+
+const updateNpcs = (dt) => {
+    for (const npc of G.npcs) {
+        if (npc.type_ === "talker") {
+            updateTalker(npc, dt)
         }
     }
 }

@@ -1,12 +1,6 @@
 import { raycastTerrain } from "./level"
-import { xorshift } from "./utils"
 
-// TODO: allow per-character (per-leg?) leg lengths
-export const WALKER_FEMUR = 40
-export const WALKER_FIBULA = 50
-export const WALKER_SKULL = 30
-const LEG_LENGTH = WALKER_FEMUR + WALKER_FIBULA
-export const LEG_OFFSET = LEG_LENGTH + WALKER_SKULL / 2
+import { WALKER_FEMUR, WALKER_FIBULA, WALKER_SKULL, LEG_LENGTH, LEG_OFFSET } from "./walker_consts"
 
 const LEG_PLANTED = 0
 const LEG_LIFTING = 1

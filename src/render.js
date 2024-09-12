@@ -1,5 +1,5 @@
 import { xorshift, setStrokeAndFill, grayscale } from "./utils"
-import { WALKER_SKULL, WALKER_FIBULA, WALKER_FEMUR } from "./walker"
+import { WALKER_SKULL, WALKER_FIBULA, WALKER_FEMUR } from "./walker_consts"
 import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK, LAMPPOST } from "./shapes"
 
 export const drawText = (x, y, text) => {
@@ -22,7 +22,7 @@ export const drawWalker = (walker) => {
     setStrokeAndFill(0, 0, 2)
     for (let i = 0; i < walker.legs.length; i++) {
         const leg = walker.legs[i]
-        const direction = walker.legs > 2 || walker.isDead ? (i < walker.legs.length / 2 ? -1 : 1) : walker.facing_
+        const direction = walker.legs.length > 2 || walker.isDead ? (i < walker.legs.length / 2 ? -1 : 1) : walker.facing_
         // Solve the two-segment inverse kinematics problem. Something like
         // FABRIK is pretty simple but trigonometry is sufficient.
         const c = Math.hypot(leg[0] - leg[2], leg[1] - leg[3])
@@ -109,6 +109,12 @@ export const drawLevel = () => {
         })
     }
     ctx.restore()
+}
+
+export const drawNpcs = () => {
+    for (const npc of G.npcs) {
+        drawWalker(npc.walker)
+    }
 }
 
 

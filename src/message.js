@@ -3,11 +3,11 @@ export const addMessage = (text, x, y, reference, isBigMessage) => {
         x += G.player.x
         y += G.player.y
     } else if (reference > 0) {
-        const npc = G.level.npcs.find((npc) => npc.id === reference)
+        const npc = G.npcs.find((npc) => npc.walker.id_ === reference)
         if (npc == undefined && IS_DEVELOPMENT_BUILD)
             throw new Error("Unknown message reference " + reference)
-        x += npc.x
-        y += npc.y
+        x += npc.walker.x
+        y += npc.walker.y
     }
 
     const m = {
@@ -21,10 +21,11 @@ export const addMessage = (text, x, y, reference, isBigMessage) => {
     for (let i = 0; i < G.messages.length; i++) {
         if (G.messages[i] === undefined) {
             G.messages[i] = m
-            return
+            return m
         }
     }
     G.messages.push(m)
+    return m
 }
 
 

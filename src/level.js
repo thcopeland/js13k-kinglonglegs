@@ -1,10 +1,12 @@
 import { newSpikes } from "./spikes"
 import { newWords } from "./comfort"
 import { newLamppost } from "./lamppost"
+import { newTalker } from "./talker"
 import { newWater } from "./water"
 import { addMessage } from "./message"
 import { adjustViewport } from "./viewport"
-import { LEG_OFFSET } from "./walker" // Circular dependency :(
+import { newWalker } from "./walker"
+import { LEG_OFFSET } from "./walker_consts"
 import { importLevel } from "./editor/level"
 import { addParticle, newParticle } from './particles'
 
@@ -12,7 +14,7 @@ export const loadLevel = (num) => {
     const level = LEVELS[num]
     G.level = level
     G.level_num = num
-    G.npcs = level.npcs
+    G.npcs = level.npcs || []
     G.objects = level.objects
     G.particles = []
     G.messages = []
@@ -225,6 +227,11 @@ const addSnow = (dt) => {
     }
 }
 
+const introductionTalker = newTalker(
+    newWalker(3, 450, 2400, 4),
+    [ "Ah....\ncome stand under this lamppost.", "You seek the many-legged king?", "Know this: the path is dark.", "You must face your fears\nor turn back." ])
+introductionTalker.walker.facing_ = 1
+
 
 const LEVELS = [
     {
@@ -264,6 +271,7 @@ const LEVELS = [
         level_right: [2, 0],
         level_up: [0, 0],
         level_down: [0, 0],
+        npcs: [ introductionTalker ],
         objects: [
             newWords("Fortune favors the bold.", 3008, 1235, 0),
             newLamppost(299, 2539, false, -1, -0.15),
