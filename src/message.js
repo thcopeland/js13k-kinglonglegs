@@ -1,4 +1,4 @@
-export const addMessage = (text, x, y, reference) => {
+export const addMessage = (text, x, y, reference, isBigMessage) => {
     if (reference === 0) {
         x += G.player.x
         y += G.player.y
@@ -14,7 +14,8 @@ export const addMessage = (text, x, y, reference) => {
         text: text,
         x: x,
         y: y,
-        t: text.length * 100 + 1000
+        t: text.length * 100 + (isBigMessage ? 2000 : 1000),
+        big: isBigMessage
     }
 
     for (let i = 0; i < G.messages.length; i++) {

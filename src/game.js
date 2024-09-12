@@ -49,7 +49,6 @@ export const init = () => {
     loadLevel(0)
     G.damage.lastSavepoint = G.level.objects.find(({ type_ }) => type_ === "lamp")
     ctx.lineCap = "round"
-    ctx.font = "16px sans-serif"
     ctx.textAlign = "center"
 }
 

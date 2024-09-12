@@ -269,11 +269,16 @@ export const drawMessages = () => {
     for (let i = 0; i < G.messages.length; i++) {
         const m = G.messages[i]
         if (m !== undefined) {
+            if (m.big) {
+                ctx.font = "bold 60px serif"
+            } else {
+                ctx.font = "16px sans-serif"
+            }
             if (m.t > 1000)
                 ctx.fillStyle = "#000"
             else
                 ctx.fillStyle = "#000000" + Math.floor(255 * m.t / 1000).toString(16)
-            drawText(m.x, m.y, m.text)
+            drawText(m.x + (m.big ? G.viewport_x : 0), m.y + (m.big ? G.viewport_y : 0), m.text)
         }
     }
     ctx.restore()

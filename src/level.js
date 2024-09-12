@@ -2,6 +2,8 @@ import { newSpikes } from "./spikes"
 import { newWords } from "./comfort"
 import { newLamppost } from "./lamppost"
 import { newWater } from "./water"
+import { addMessage } from "./message"
+import { adjustViewport } from './viewport'
 import { LEG_OFFSET } from "./walker" // Circular dependency :(
 import { importLevel } from "./editor/level"
 
@@ -11,6 +13,14 @@ export const loadLevel = (num) => {
     G.level_num = num
     G.npcs = level.npcs
     G.objects = level.objects
+
+    adjustViewport()
+
+    if (!level.loadedBefore) {
+        level.loadedBefore = true
+        addMessage(level.level_name, 100, 100, undefined, true)
+        // TODO: play a sound
+    }
 
     if (IS_DEVELOPMENT_BUILD && E.enabled) {
         console.log("CURRENT LEVEL: " + num + " " + LEVELS[num].level_name)
