@@ -17,8 +17,8 @@ export const init = () => {
         level: undefined,
         level_num: 0,
         player: newWalker(42, 440, 1700, 2),
-        player_courage: 3,
-        player_maxCourage: 3,
+        player_courage: 20,
+        player_maxCourage: 20,
         damage: {
             pending: undefined,
             invincibility: 0,
@@ -32,7 +32,7 @@ export const init = () => {
             buffer: 0,
             zPressed: false,
             doubleJumpReady: false,
-            hasDoubleJump: false
+            hasDoubleJump: true
         },
         npcs: [],
         objects: [],

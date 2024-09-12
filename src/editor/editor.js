@@ -90,6 +90,8 @@ export const initEditor = () => {
             const level = parseInt(prompt("What level to you want to teleport to?"))
             if (!isNaN(level)) {
                 loadLevel(level)
+                G.player.x = G.level.level_w / 2
+                G.player.y = G.level.level_h / 2
             }
         }
     })
