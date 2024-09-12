@@ -215,6 +215,12 @@ export const drawGameObjects = () => {
             ctx.shadowBlur = 0
             drawShape(LAMPPOST, 0, 0)
             ctx.restore()
+        } else if (object.type_ === "water") {
+            ctx.lineWidth = 5
+            ctx.strokeStyle = "#fffa"
+            ctx.fillStyle = "#fff6"
+            ctx.fillRect(object.x, object.y, object.bounds_width, object.bounds_height)
+            ctx.strokeRect(object.x, object.y, object.bounds_width, object.bounds_height)
         } else {
             if (IS_DEVELOPMENT_BUILD) {
                 ctx.restore()

@@ -1,4 +1,5 @@
 import { raycastTerrain } from "./level"
+import { xorshift } from "./utils"
 
 // TODO: allow per-character (per-leg?) leg lengths
 export const WALKER_FEMUR = 40
@@ -31,7 +32,8 @@ export const newWalker = (id_, x, y, legNum) => {
         facing_: 1,
         legs,
         isGrounded: false,
-        isDead: false
+        isDead: false,
+        isUnderWater: false
     }
 }
 
@@ -42,7 +44,7 @@ export const updateWalker = (walker, dt) => {
 
     updateLegs(walker, dt)
 
-    if (!walker.isDead && walker.isGrounded && walker.vy > -1 && ceiling.t > dt + 1) {
+    if (!walker.isDead && !walker.isUnderWater && walker.isGrounded && walker.vy > -1 && ceiling.t > dt + 1) {
         walker.y = ground.contact_y + 0.01 * ground.normal_y * dt - LEG_OFFSET
         walker.vy = 0
     } else {
@@ -190,7 +192,7 @@ const updateLegs = (walker, dt) => {
                     leg[2] -= dt * 0.05 * Math.sign(dx)
                     leg[3] -= dt * 0.05 * Math.sign(dy)
                 } else {
-                    leg[4] = leg[0] + walker.x + (walker.isGrounded ? LEG_LENGTH / 20 * Math.cos(G.t / 150 + walker.id_) : 0)
+                    leg[4] = leg[0] + walker.x + ((walker.isGrounded || walker.isUnderWater) ? LEG_LENGTH / 20 * Math.cos(G.t / 150 + leg[0]) : 0)
                     leg[5] = leg[1] + walker.y + LEG_LENGTH * 0.99
                     const dx = leg[2] - leg[4] + walker.x
                     const dy = leg[3] - leg[5] + walker.y

@@ -1,6 +1,7 @@
 import { newWords } from "../comfort"
 import { newLamppost } from "../lamppost"
 import { newSpikes } from "../spikes"
+import { newWater } from '../water'
 
 // TODO: does this actually improve file size?
 const reducePrecision = x => Math.round(x/10)*10
@@ -24,6 +25,8 @@ export const exportLevel = () => {
                 return `        newWords(${JSON.stringify(obj.text)}, ${obj.x}, ${obj.y}, ${obj.rotation})`
             } else if (obj.type === "lamp") {
                 return `        newLamppost(${obj.x}, ${obj.y}, ${obj.isPrelit}, ${obj.isFlipped ? -1 : 1}, ${obj.rotation})`
+            } else if (obj.type === "water") {
+                return `        newWater(${obj.x}, ${obj.y}, ${obj.width}, ${obj.height})`
             }
         })
         .join(",\n")
@@ -76,7 +79,7 @@ export const importLevel = () => {
                 speed: obj.speed_,
                 delay: obj.delay
             }
-        } else if (obj.type_ === "words") { 
+        } else if (obj.type_ === "words") {
             return {
                 type: "words",
                 text: obj.text,
@@ -92,6 +95,14 @@ export const importLevel = () => {
                 isPrelit: obj.prelit,
                 isFlipped: obj.s < 0,
                 rotation: obj.r
+            }
+        } else if (obj.type_ === "water") {
+            return {
+                type: "water",
+                x: obj.x,
+                y: obj.y,
+                width: obj.bounds_width,
+                height: obj.bounds_height
             }
         } else {
             console.log(obj.type_ + " is unsupported")
@@ -116,6 +127,8 @@ export const syncLevel = () => {
             return newWords(obj.text, obj.x, obj.y, obj.rotation)
         } else if (obj.type === "lamp") {
             return newLamppost(obj.x, obj.y, obj.isPrelit, obj.isFlipped ? -1 : 1, obj.rotation)
+        } else if (obj.type === "water") {
+            return newWater(obj.x, obj.y, obj.width, obj.height)
         } else {
             console.log(obj.type + " is unsupported")
         }

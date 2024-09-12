@@ -66,7 +66,7 @@ const handleRespawn = (dt) => {
 
 
 const handleJumping = (dt) => {
-    if (G.player.isGrounded) {
+    if (G.player.isGrounded || (G.player.isUnderWater && Math.abs(G.player.vy) < 1)) {
         G.jump.coyoteTime = 100
         G.jump.doubleJumpReady = G.jump.hasDoubleJump
     } else if (G.jump.coyoteTime >= 0) {
