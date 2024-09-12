@@ -25,7 +25,7 @@ export const updatePlayer = (dt) => {
         handleJumping(dt)
         updateWalker(G.player, dt)
     }
-} 
+}
 
 
 const handleDamage = (dt) => {
@@ -84,12 +84,10 @@ const handleJumping = (dt) => {
         }
     }
 
-    if ((G.t - G.jump.lastTime) < 50) {
-        G.player.vy = -2.5
-    } else if (G.keys["z"] && (G.t - G.jump.lastTime) < 100) {
+    if ((G.t - G.jump.lastTime) < 35) {
+        G.player.vy = -2
+    } else if (G.keys["z"] && (G.t - G.jump.lastTime) < 85) {
         G.player.vy = Math.min(G.player.vy, -2)
-    }  else if (G.keys["z"] && (G.t - G.jump.lastTime) < 150) {
-        G.player.vy = Math.min(G.player.vy, -1)
     }
 }
 

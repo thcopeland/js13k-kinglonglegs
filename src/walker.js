@@ -18,7 +18,7 @@ export const newWalker = (id_, x, y, legNum) => {
         const l = i / (legNum - 1)
         // const l = 0
         const lx = 0.5 * WALKER_SKULL * (2 * l - 1)
-        const ly = WALKER_SKULL-Math.abs(lx/2) - 4
+        const ly = WALKER_SKULL - Math.abs(lx / 2) - 4
         // start, end, target, time
         legs.push([lx, ly, lx, ly + LEG_LENGTH, x, y + LEG_LENGTH, LEG_LOWERING])
     }
@@ -36,9 +36,9 @@ export const newWalker = (id_, x, y, legNum) => {
 }
 
 export const updateWalker = (walker, dt) => {
-    const ground = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, 0, 1, 30)
+    const ground = raycastTerrain(walker.x, walker.y + LEG_OFFSET - 30, 0, 1, 30)
     const ceiling = raycastTerrain(walker.x, walker.y, 0, -1 - Math.abs(walker.vy), WALKER_SKULL)
-    walker.isGrounded = Math.abs(ground.normal_y) > 0.6 && ground.t < 2*dt + 2
+    walker.isGrounded = Math.abs(ground.normal_y) > 0.6 && ground.t < 2 * dt + 2
 
     updateLegs(walker, dt)
 
@@ -51,7 +51,7 @@ export const updateWalker = (walker, dt) => {
 
     let movementTime = dt
     for (let i = 0; i < 3 && movementTime > 1e-3; i++) {
-        const feetCollision = raycastTerrain(walker.x, walker.y+LEG_OFFSET-30, walker.vx, walker.vy, 30)
+        const feetCollision = raycastTerrain(walker.x, walker.y + LEG_OFFSET - 30, walker.vx, walker.vy, 30)
         const headCollision = raycastTerrain(walker.x, walker.y, walker.vx, walker.vy, WALKER_SKULL)
         const collision = headCollision.t < feetCollision.t || walker.isDead ? headCollision : feetCollision
 
@@ -69,15 +69,15 @@ export const updateWalker = (walker, dt) => {
         }
     }
 
-    walker.vy *= Math.pow(0.96, dt/10)
-    walker.vx *= Math.pow(walker.isDead ? 0.95 : 0.8, dt/10)
+    walker.vy *= Math.pow(0.96, 10 / dt)
+    walker.vx *= Math.pow(walker.isDead ? 0.95 : 0.8, 10 / dt)
     if (walker.vx > 1)
         walker.vx = 1
     if (walker.vx < -1)
         walker.vx = -1
 }
 
-const legSpeed = (x, vx) => x*x*x / (Math.abs(x*x*x) + 1) * (0.5 * Math.abs(vx) + 0.4)
+const legSpeed = (x, vx) => x * x * x / (Math.abs(x * x * x) + 1) * (0.5 * Math.abs(vx) + 0.4)
 
 const updateLegs = (walker, dt) => {
     ctx.save()
@@ -135,7 +135,7 @@ const updateLegs = (walker, dt) => {
         //         }
         //     }
         // } else
-         if (leg[6] === LEG_PLANTED) {
+        if (leg[6] === LEG_PLANTED) {
             leg[2] = leg[4] - walker.x
             leg[3] = leg[5] - walker.y
             if (walker.legs.every(leg => leg[6] === LEG_PLANTED) &&
@@ -143,13 +143,13 @@ const updateLegs = (walker, dt) => {
                 leg[6] = LEG_LIFTING
         } else if (leg[6] === LEG_LIFTING && !walker.isDead) {
             leg[2] -= dt * legSpeed(leg[2] - leg[0], walker.vx)
-            leg[3] -= dt * legSpeed(leg[3] - 0.8 * LEG_LENGTH, (walker.vx + walker.vy)/2)
+            leg[3] -= dt * legSpeed(leg[3] - 0.8 * LEG_LENGTH, (walker.vx + walker.vy) / 2)
             if (Math.abs(leg[2] - leg[0]) < 20)
                 leg[6] = LEG_LOWERING
         } else if (leg[6] === LEG_LOWERING || walker.isDead) {
             let bestCollision = undefined
             for (let i = 0; i < 20; i++) {
-                const angle = (i - 10) * 0.04 + (Math.PI/2 - walker.vx * dt * 0.03)
+                const angle = (i - 10) * 0.04 + (Math.PI / 2 - walker.vx * dt * 0.03)
                 const collision = raycastTerrain(
                     walker.x + leg[0],
                     walker.y + leg[1],
@@ -176,7 +176,7 @@ const updateLegs = (walker, dt) => {
                 const dx = leg[2] - leg[4] + walker.x
                 const dy = leg[3] - leg[5] + walker.y
                 leg[2] -= dt * legSpeed(dx, walker.vx)
-                leg[3] -= dt * legSpeed(dy, (walker.vx + walker.vy)/2)
+                leg[3] -= dt * legSpeed(dy, (walker.vx + walker.vy) / 2)
                 if (Math.hypot(dx, dy) < 10)
                     leg[6] = LEG_PLANTED
             } else {
@@ -190,7 +190,7 @@ const updateLegs = (walker, dt) => {
                     leg[2] -= dt * 0.05 * Math.sign(dx)
                     leg[3] -= dt * 0.05 * Math.sign(dy)
                 } else {
-                    leg[4] = leg[0] + walker.x + (walker.isGrounded ? LEG_LENGTH/20*Math.cos(G.t / 150 + walker.id_) : 0)
+                    leg[4] = leg[0] + walker.x + (walker.isGrounded ? LEG_LENGTH / 20 * Math.cos(G.t / 150 + walker.id_) : 0)
                     leg[5] = leg[1] + walker.y + LEG_LENGTH * 0.99
                     const dx = leg[2] - leg[4] + walker.x
                     const dy = leg[3] - leg[5] + walker.y
