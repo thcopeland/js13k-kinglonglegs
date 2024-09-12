@@ -99,11 +99,11 @@ const handleControls = (dt) => {
         }
         if (G.keys["ArrowLeft"]) {
             G.player.facing_ = -1
-            G.player.vx -= 0.15
+            G.player.vx -= 0.3
         }
         if (G.keys["ArrowRight"]) {
             G.player.facing_ = 1
-            G.player.vx += 0.15
+            G.player.vx += 0.3
         }
     }
 
