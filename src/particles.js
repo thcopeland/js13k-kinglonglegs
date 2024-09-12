@@ -1,3 +1,5 @@
+import { raycastTerrain } from "./level"
+
 /*
  * variety  0 - basic, 1 - courage gained
  * life
@@ -83,6 +85,10 @@ export const updateParticles = (dt) => {
                     const len = Math.hypot(dx, dy)
                     particle.vx -= dx / (len + 10) / 4
                     particle.vy -= dy / (len + 10) / 4
+                } else if (particle.variety === 2 && !particle.screenspace) {
+                    const collision = raycastTerrain(particle.x, particle.y, particle.vx, particle.vy, 4)
+                    if (collision.t < dt)
+                        G.particles[i] = undefined
                 }
             }
         }

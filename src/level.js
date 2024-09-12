@@ -3,9 +3,10 @@ import { newWords } from "./comfort"
 import { newLamppost } from "./lamppost"
 import { newWater } from "./water"
 import { addMessage } from "./message"
-import { adjustViewport } from './viewport'
+import { adjustViewport } from "./viewport"
 import { LEG_OFFSET } from "./walker" // Circular dependency :(
 import { importLevel } from "./editor/level"
+import { addParticle, newParticle } from './particles'
 
 export const loadLevel = (num) => {
     const level = LEVELS[num]
@@ -13,6 +14,8 @@ export const loadLevel = (num) => {
     G.level_num = num
     G.npcs = level.npcs
     G.objects = level.objects
+    G.particles = []
+    G.messages = []
 
     adjustViewport()
 
@@ -21,6 +24,9 @@ export const loadLevel = (num) => {
         addMessage(level.level_name, 100, 100, undefined, true)
         // TODO: play a sound
     }
+
+    if (level.level_enter)
+        level.level_enter()
 
     if (IS_DEVELOPMENT_BUILD && E.enabled) {
         console.log("CURRENT LEVEL: " + num + " " + LEVELS[num].level_name)
@@ -189,6 +195,34 @@ const qroot = (a, b, c) => {
     const e = -b / (2 * a)
     const f = Math.sqrt(det) / (2 * a)
     return e-f >= 0 ? e-f : e+f
+}
+
+
+const addInitialSnow = () => {
+    for (let i = 0; i < 6000; i++) {
+        addParticle(newParticle(
+            Math.random() < 0.9 ? 2 : 0,
+            undefined,
+            Math.random() * G.level.level_w,
+            Math.random() * (G.level.level_h + 100) - 100,
+            30000,
+            0.01, 0.9, 0.5, 0.005))
+    }
+}
+
+
+const addSnow = (dt) => {
+    for (let i = 0; i < 2; i++) {
+        if (Math.random() * dt/10 > 0.8) {
+            addParticle(newParticle(
+                Math.random() < 0.9 ? 2 : 0,
+                undefined,
+                Math.random() * G.level.level_w,
+                0,
+                30000,
+                0.01, 0.9 + Math.random() * 0.04, 0.5, 0.005))
+        }
+    }
 }
 
 
@@ -370,6 +404,8 @@ const LEVELS = [
     },
     {
         level_name: "The Tower",
+        level_enter: addInitialSnow,
+        level_update: addSnow,
         level_w: 3000,
         level_h: 4000,
         level_left: [0, 0],
@@ -404,11 +440,11 @@ const LEVELS = [
             [ 2960, 3040, 2960, 2440, 2980, 40 ],
             [ 0, 1020, 220, 1110, 300, 1340, 280, 2920, 410, 3020, 760, 3160, 770, 3250, 730, 3330, 40, 3350 ],
             [ 970, 3160, 1110, 3180, 1190, 3240, 1140, 3310, 910, 3290, 930, 3210, 970, 3160 ],
-            [ 2020, 1520, 2020, 1470, 2480, 1460, 2490, 1500, 2020, 1520 ],
+            [ 1940, 1520, 1940, 1460, 2480, 1460, 2490, 1500, 1940, 1520 ],
             [ 2370, 1210, 2620, 1210, 2620, 1300, 2350, 1300, 2370, 1210 ],
-            [ 1630, 870, 1810, 890, 1810, 950, 1630, 950, 1630, 870 ],
-            [ 640, 790, 740, 790, 740, 810, 630, 820, 640, 790 ],
-            [ 1150, 880, 1270, 880, 1260, 930, 1150, 910, 1150, 880 ],
+            [ 1630, 870, 1860, 900, 1860, 990, 1630, 980, 1630, 870 ],
+            [ 640, 790, 850, 800, 860, 870, 630, 870, 640, 790 ],
+            [ 1090, 860, 1350, 860, 1360, 980, 1080, 950, 1090, 860 ],
             [ 0, 10, 120, 0, 60, 280, 50, 1060, 0, 1070 ]
         ]
     },

@@ -70,6 +70,9 @@ export const game = (dt) => {
         E.draw()
     }
 
+    if (G.level.level_update)
+        G.level.level_update(dt)
+
     enforceLevelBounds()
     updatePlayer(dt)
     updateGameObjects(dt)
