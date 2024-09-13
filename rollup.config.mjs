@@ -28,7 +28,7 @@ export default [
             }),
             copy({}),
             html({ template: 'src/index.html' }),
-            release && zip({ file: 'dist/leggyboi.zip' })
+            release && zip({ file: 'dist/kinglonglegs.zip' })
         ]
     }
 ]
