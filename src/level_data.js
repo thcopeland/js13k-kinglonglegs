@@ -8,7 +8,7 @@ import { addParticle, newParticle } from './particles'
 import { finalLevelDraw, finalLevelUpdate } from './boss'
 
 const addSnow = (dt) => {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 3; i++) {
         if (Math.random() * dt/10 > 0.8) {
             addParticle(newParticle(
                 Math.random() < 0.95 ? 2 : 0,
