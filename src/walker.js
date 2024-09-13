@@ -64,8 +64,8 @@ export const updateWalker = (walker, dt) => {
         }
     }
 
-    walker.vy *= Math.pow(0.96, 10 / dt)
-    walker.vx *= Math.pow(walker.isDead ? 0.95 : 0.5, 10 / dt)
+    walker.vy *= 0.98
+    walker.vx *= walker.isDead ? 0.95 : 0.6
     if (walker.vx > 1)
         walker.vx = 1
     if (walker.vx < -1)
