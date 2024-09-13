@@ -5,8 +5,8 @@ import { initEditor } from "./editor/editor"
 
 
 const canvas = document.querySelector("canvas")
+canvas.height = Math.min(1000, innerHeight-50)
 canvas.width = Math.min(1600, innerWidth-50)
-canvas.height = Math.min(1200, innerHeight-50)
 ctx = canvas.getContext("2d")
 
 G = { }

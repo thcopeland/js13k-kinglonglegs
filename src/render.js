@@ -52,7 +52,7 @@ export const drawWalker = (walker) => {
 
 export const drawBackdrop = () => {
     ctx.fillStyle = "#aaa"
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+    ctx.fillRect(0, 0, G.viewport_w, G.viewport_h)
 }
 
 export const drawLevel = () => {
@@ -118,14 +118,14 @@ export const drawNpcs = () => {
 }
 
 
-export const drawParticles = (screenspace) => {
+export const drawParticles = (onTop) => {
     ctx.save()
     ctx.translate(-G.viewport_x, -G.viewport_y)
     setStrokeAndFill(13, 15, 1)
     for (let i = 0; i < G.particles.length; i++)
     {
         const particle = G.particles[i]
-        if (particle !== undefined && particle.screenspace == screenspace)  {
+        if (particle !== undefined && particle.onTop == onTop)  {
             const px = particle.screenspace ? particle.x + G.viewport_x : particle.x
             const py = particle.screenspace ? particle.y + G.viewport_y : particle.y
             if (px > G.viewport_x - 10 && px < G.viewport_x + G.viewport_w + 10 &&
@@ -277,8 +277,10 @@ export const drawMessages = () => {
         if (m !== undefined) {
             if (m.big) {
                 ctx.font = "bold 60px serif"
+                ctx.textAlign = "left"
             } else {
                 ctx.font = "16px sans-serif"
+                ctx.textAlign = "center"
             }
             if (m.t > 1000)
                 ctx.fillStyle = "#000"

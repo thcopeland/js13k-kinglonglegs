@@ -48,8 +48,10 @@ export const updateStats = (dt) => {
                 if (pending[0] > 0) {
                     particle = newParticle(1, [courageDrawn * 40 + 40, 40], pending[1] - G.viewport_x, pending[2] - G.viewport_y, 3000, 1e-10, 0.97, 1, 0.0001)
                     particle.screenspace = true
+                    particle.onTop = true
                 } else {
                     particle = newParticle(0, undefined, courageDrawn * 40 + G.viewport_x, 40 + G.viewport_y, 10000, 0.005, 0.99, 0.5, 0.005)
+                    particle.onTop = true
                 }
                 particle.vx = 2 * (Math.random() - 0.5)
                 particle.vy = 2 * (Math.random() - 0.5)
