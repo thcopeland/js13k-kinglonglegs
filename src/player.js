@@ -2,6 +2,7 @@ import { decrementCourage } from "./stats"
 import { updateWalker } from "./walker"
 import { loadLevel } from "./level"
 import { zzfx } from "./zzfx"
+import { addMessage } from './message'
 
 
 export const updatePlayer = (dt) => {
@@ -32,7 +33,8 @@ const handleDamage = (dt) => {
     if (G.damage.invincibility > 0)
         G.damage.invincibility -= dt
     if (G.damage.pending !== undefined) {
-        if (G.damage.invincibility <= 0) {
+        if (G.damage.invincibility <= 0 && G.player.courage > 0) {
+            zzfx(...[,,999,.01,.04,.02,3,3.5,,-12,41,.27,,,,,,.57,.03,.05])
             decrementCourage()
             G.damage.invincibility = 500
             G.player.vx += 2 * G.damage.pending.push_x
@@ -41,8 +43,9 @@ const handleDamage = (dt) => {
             G.jump.coyoteTime = 200
             G.jump.doubleJumpReady = G.jump.hasDoubleJump
             if (G.player_courage <= 0) {
+                setTimeout(() => addMessage("Ughgh...", 0, -80, 0), 400)
                 G.player.isDead = true
-                G.damage.deathTimer = 3000
+                G.damage.deathTimer = 2000
             }
         }
         G.damage.pending = undefined
@@ -55,6 +58,7 @@ const handleRespawn = (dt) => {
         G.damage.deathTimer -= dt
 
         if (G.damage.deathTimer <= 0) {
+            zzfx(...[2,0,200,.06,.12,.39,,2,-0.2,-0.1,50,,.06,,,.1,.19,.65,.27]); // Powerup 93
             G.player.isDead = false
             G.player.x = G.damage.lastSavepoint.x - G.damage.lastSavepoint.s * 100
             G.player.y = G.damage.lastSavepoint.y - 200

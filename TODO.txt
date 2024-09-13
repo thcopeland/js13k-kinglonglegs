@@ -6,16 +6,19 @@
 - courage meter
 - spikes
 - panic
-* level brightness
+x level brightness
 - words of comfort
 - level editor
 - animations (IK or hardcoded)
-* at least 13 levels
-x final boss
+x at least 13 levels
+- final boss
 * end screen
-* talkers
+- talkers
 x pursuing ghosts
 x diving ghosts
+* crown
+* adventurer
+- sounds
 
 # Optional
 - IK for walking, jumping

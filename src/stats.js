@@ -4,6 +4,7 @@ import { setStrokeAndFill } from "./utils"
 const couragePending = []
 const courageParticles = []
 let courageDrawn = 0
+let pendingTimeout = 0
 
 
 export const incrementCourage = (isUpgrade, startX, startY) => {
@@ -55,11 +56,13 @@ export const updateStats = (dt) => {
                 }
                 particle.vx = 2 * (Math.random() - 0.5)
                 particle.vy = 2 * (Math.random() - 0.5)
+                pendingTimeout = 3000
                 courageParticles[i] = particle
                 addParticle(particle)
             }
         } else {
-            const finished = pending[0] < 0 || courageParticles.every(p => Math.hypot(p.x - p.varietyData[0], p.y - p.varietyData[1]) < 10 || p.life >= p.lifetime)
+            pendingTimeout -= dt
+            const finished = pendingTimeout < 0 || pending[0] < 0 || courageParticles.every(p => Math.hypot(p.x - p.varietyData[0], p.y - p.varietyData[1]) < 10 || p.life >= p.lifetime)
             if (finished) {
                 courageDrawn += couragePending.shift()[0]
                 if (pending[0] > 0)
