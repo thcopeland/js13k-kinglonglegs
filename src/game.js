@@ -22,8 +22,8 @@ export const init = () => {
         level: undefined,
         level_num: 0,
         player: newWalker(1, 440, 1700, 2),
-        player_courage: 20,
-        player_maxCourage: 20,
+        player_courage: 3,
+        player_maxCourage: 3,
         damage: {
             pending: undefined,
             invincibility: 0,
@@ -37,7 +37,7 @@ export const init = () => {
             buffer: 0,
             zPressed: false,
             doubleJumpReady: false,
-            hasDoubleJump: true
+            hasDoubleJump: false
         },
         npcs: [],
         objects: [],
@@ -66,7 +66,7 @@ export const game = (dt) => {
     drawGameObjects()
     if (G.level.level_draw)
         G.level.level_draw()
-    drawParticles(false)
+    drawParticles()
     drawLevel()
     drawParticles(true)
     drawMessages()

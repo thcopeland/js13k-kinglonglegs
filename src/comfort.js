@@ -40,7 +40,9 @@ export const updateWords = (obj, dt) => {
             zzfx(...[1.2,,268,.02,.19,.32,,3.6,,,305,.07,.03,,,,.16,.79,.13,,-1388])
             obj.t = 0.001
             incrementCourage(true, obj.x, obj.y - 170)
-            addMessage(obj.text, obj.x, obj.y - 200)
+            if (obj.text.startsWith("DOUBLE"))
+                G.jump.hasDoubleJump = true
+            addMessage(obj.text, obj.x, obj.y - 160 - 20*obj.text.split("\n").length)
         }
     } else if (obj.t < 500) {
         obj.t += dt
