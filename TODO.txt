@@ -16,7 +16,7 @@ x at least 13 levels
 - talkers
 x pursuing ghosts
 x diving ghosts
-* crown
+- crown
 * adventurer
 - sounds
 

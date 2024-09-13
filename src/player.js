@@ -33,7 +33,7 @@ const handleDamage = (dt) => {
     if (G.damage.invincibility > 0)
         G.damage.invincibility -= dt
     if (G.damage.pending !== undefined) {
-        if (G.damage.invincibility <= 0 && G.player.courage > 0) {
+        if (G.damage.invincibility <= 0 && G.player_courage > 0) {
             zzfx(...[,,999,.01,.04,.02,3,3.5,,-12,41,.27,,,,,,.57,.03,.05])
             decrementCourage()
             G.damage.invincibility = 500
@@ -90,7 +90,7 @@ const handleJumping = (dt) => {
 
     if ((G.t - G.jump.lastTime) < 35) {
         G.player.vy = -2
-    } else if (G.keys["z"] && (G.t - G.jump.lastTime) < 85) {
+    } else if ((G.keys["ArrowUp"] || G.keys["w"]) && (G.t - G.jump.lastTime) < 85) {
         G.player.vy = Math.min(G.player.vy, -2)
     }
 }
@@ -98,18 +98,18 @@ const handleJumping = (dt) => {
 
 const handleControls = (dt) => {
     if (!G.player.isDead) {
-        if (!G.jump.zPressed && G.keys["z"]) {
+        if (!G.jump.zPressed && (G.keys["ArrowUp"] || G.keys["w"])) {
             G.jump.buffer = 50
         }
-        if (G.keys["ArrowLeft"]) {
+        if (G.keys["ArrowLeft"] || G.keys["a"]) {
             G.player.facing_ = -1
             G.player.vx -= 0.3
         }
-        if (G.keys["ArrowRight"]) {
+        if (G.keys["ArrowRight"] || G.keys["d"]) {
             G.player.facing_ = 1
             G.player.vx += 0.3
         }
     }
 
-    G.jump.zPressed = G.keys["z"]
+    G.jump.zPressed = (G.keys["ArrowUp"] || G.keys["w"])
 }
