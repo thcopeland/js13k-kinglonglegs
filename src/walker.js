@@ -1,6 +1,5 @@
-import { raycastTerrain } from "./level"
-
-import { WALKER_FEMUR, WALKER_FIBULA, WALKER_SKULL, LEG_LENGTH, LEG_OFFSET } from "./walker_consts"
+import { raycastTerrain } from "./collision"
+import { WALKER_SKULL, LEG_LENGTH, LEG_OFFSET } from "./walker_consts"
 
 const LEG_PLANTED = 0
 const LEG_LIFTING = 1

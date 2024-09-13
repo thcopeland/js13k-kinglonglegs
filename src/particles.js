@@ -1,4 +1,4 @@
-import { raycastTerrain } from "./level"
+import { raycastTerrain } from "./collision"
 
 /*
  * variety  0 - basic, 1 - courage gained
