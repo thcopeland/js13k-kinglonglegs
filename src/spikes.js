@@ -54,10 +54,10 @@ export const updateSpikes = (obj, dt) => {
 
     for (let i = 0; i < obj.positions.length; i += 4) {
         const dx = G.player.x - (obj.positions[i] + obj.reach * obj.extension[i/2] * obj.positions[i+2])
-        const dy = G.player.y + 80 - (obj.positions[i+1] + obj.reach * obj.extension[i/2] * obj.positions[i+3])
+        const dy = G.player.y + 80 - (obj.positions[i+1] + 0.8*obj.reach * obj.extension[i/2] * obj.positions[i+3])
         const dist = Math.hypot(dx, dy)
         const proj = obj.reach * (dx * obj.extension[i/2] + dy * obj.extension[i/2]) / dist
-        if (proj > 0.8 && dist < 50 && obj.extension[i/2] > 0.75) {
+        if (proj > 0.8 && dist < 30 + 0.2*obj.reach && obj.extension[i/2] > 0.75) {
             G.damage.pending ||= { push_x: obj.positions[i+2], push_y: obj.positions[i+3] }
         }
 

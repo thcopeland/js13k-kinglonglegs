@@ -53,7 +53,6 @@ export const init = () => {
     loadLevel(0)
     G.damage.lastSavepoint = G.level.objects.find(({ type_ }) => type_ === "lamp")
     ctx.lineCap = "round"
-    ctx.textAlign = "center"
 }
 
 export const game = (dt) => {
@@ -65,6 +64,8 @@ export const game = (dt) => {
     drawWalker(G.player)
     drawNpcs()
     drawGameObjects()
+    if (G.level.level_draw)
+        G.level.level_draw()
     drawParticles(false)
     drawLevel()
     drawParticles(true)
