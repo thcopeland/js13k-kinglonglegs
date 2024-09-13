@@ -1,6 +1,7 @@
 import { newWalker, updateWalker } from './walker'
-import { drawWalker } from './render'
+import { drawShape, drawWalker } from './render'
 import { addMessage } from './message'
+import { CROWN } from './shapes'
 
 const boss = newWalker(666, 600, 1900, 13)
 let mode = 0
@@ -36,6 +37,8 @@ export const finalLevelUpdate = (dt) => {
             boss.vy = -2
         if (boss.y > 2050) {
             addMessage("Ughgh...", boss.x, boss.y-80)
+            setTimeout(() => G.mode = 2, 1000)
+            G.winTime = G.t
             boss.isDead = true
         }
     }
@@ -44,4 +47,5 @@ export const finalLevelUpdate = (dt) => {
 
 export const finalLevelDraw = () => {
     drawWalker(boss)
+    drawShape(CROWN, boss.x - G.viewport_x, boss.y - G.viewport_y)
 }

@@ -18,7 +18,7 @@ export const init = () => {
     ctx.scale(scale, scale)
 
     G = {
-        mode: 1, // Start, Game, Game Over
+        mode: 0, // Start, Game, Game Over
         level: undefined,
         level_num: 0,
         player: newWalker(1, 440, 1700, 2),
@@ -58,35 +58,68 @@ export const init = () => {
 export const game = (dt) => {
     // dt /= 10
     G.t += dt
+    if (G.mode === 0) {
+        ctx.clearRect(0, 0, G.viewport_w, G.viewport_h)
+        drawBackdrop()
+        drawWalker(G.player)
+        drawGameObjects()
+        drawLevel()
+        ctx.fillStyle = "#fffa"
+        ctx.fillRect(0, 0, G.viewport_w, G.viewport_h)
+        ctx.fillStyle = "#000"
+        ctx.font = "bold 60px serif"
+        ctx.textAlign = "center"
+        ctx.fillText("King Longlegs", G.viewport_w/2, G.viewport_h/2-100)
+        ctx.font = "25px sans"
+        ctx.fillText("Use the arrow keys or WASD to move.", G.viewport_w/2, G.viewport_h/2)
+        ctx.fillText("Press any key to continue.", G.viewport_w/2, G.viewport_h/2+40)
+        if (Object.entries(G.keys).some(x => x[1])) {
+            G.mode = 1
+        }
+    } else if (G.mode === 1) {
+        ctx.clearRect(0, 0, G.viewport_w, G.viewport_h)
+        drawBackdrop()
+        drawWalker(G.player)
+        drawNpcs()
+        drawGameObjects()
+        if (G.level.level_draw)
+            G.level.level_draw()
+        drawParticles()
+        drawLevel()
+        drawParticles(true)
+        drawMessages()
+        drawStats()
 
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-    drawBackdrop()
-    drawWalker(G.player)
-    drawNpcs()
-    drawGameObjects()
-    if (G.level.level_draw)
-        G.level.level_draw()
-    drawParticles()
-    drawLevel()
-    drawParticles(true)
-    drawMessages()
-    drawStats()
+        if (IS_DEVELOPMENT_BUILD && window.E && E.enabled) {
+            E.draw()
+        }
 
-    if (IS_DEVELOPMENT_BUILD && window.E && E.enabled) {
-        E.draw()
+        if (G.level.level_update)
+            G.level.level_update(dt)
+
+        enforceLevelBounds()
+        updatePlayer(dt)
+        updateNpcs(dt)
+        updateGameObjects(dt)
+        updateParticles(dt)
+        updateMessages(dt)
+        updateStats(dt)
+        adjustViewport(dt)
+    } else if (G.mode === 2) {
+        ctx.clearRect(0, 0, G.viewport_w, G.viewport_h)
+        drawBackdrop()
+        drawWalker(G.player)
+        drawGameObjects()
+        drawLevel()
+        ctx.fillStyle = "#fffa"
+        ctx.fillRect(0, 0, G.viewport_w, G.viewport_h)
+        ctx.fillStyle = "#000"
+        ctx.font = "bold 60px serif"
+        ctx.textAlign = "center"
+        ctx.fillText("Victory!", G.viewport_w/2, G.viewport_h/2-100)
+        ctx.font = "25px serif"
+        ctx.fillText("The evil thirteen-legged king is no more.", G.viewport_w/2, G.viewport_h/2)
     }
-
-    if (G.level.level_update)
-        G.level.level_update(dt)
-
-    enforceLevelBounds()
-    updatePlayer(dt)
-    updateNpcs(dt)
-    updateGameObjects(dt)
-    updateParticles(dt)
-    updateMessages(dt)
-    updateStats(dt)
-    adjustViewport(dt)
 }
 
 

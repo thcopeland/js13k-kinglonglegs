@@ -1,6 +1,6 @@
 import { xorshift, setStrokeAndFill, grayscale } from "./utils"
 import { WALKER_SKULL, WALKER_FIBULA, WALKER_FEMUR } from "./walker_consts"
-import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK, LAMPPOST } from "./shapes"
+import { WORDS_OF_COMFORT_PEDESTAL, WORDS_OF_COMFORT_BOOK, LAMPPOST, CROWN } from "./shapes"
 
 export const drawText = (x, y, text) => {
     const lines = text.split("\n")

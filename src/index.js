@@ -31,6 +31,8 @@ addEventListener("keyup", (evt) => G.keys[evt.key] = false)
 addEventListener("blur", () => {
     G.keys = {}
     lastTime = undefined
+    if (G.mode === 1)
+        G.mode = 0
 })
 
 const loop = (time) => {
